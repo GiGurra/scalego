@@ -1,9 +1,16 @@
 *.class
 *.log
+*.jar
+*.zip
+*.exe
+README.md~
+.gitignore~
+LICENSE~
+*BuildVersion*
 
 # sbt specific
-.cache
-.history
+.cache/
+.history/
 .lib/
 dist/*
 target/
@@ -12,6 +19,41 @@ src_managed/
 project/boot/
 project/plugins/project/
 
+#generated code
+src_generated/
+data_generator/
+data_generated/
+
+#python
+*.pyc
+__pycache__
+
 # Scala-IDE specific
 .scala_dependencies
 .worksheet
+
+# temp files
+*~
+temp/
+
+# eclipse stuff
+.project
+.classpath
+.cache
+.settings
+.settings/
+
+# intellij
+.idea
+.idea/
+
+# doit
+.doit.db*
+
+*.so
+*.dll
+*.jnilib
+natives/
+
+leavu3-debug-log.txt
+leavu3-log.txt
