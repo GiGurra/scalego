@@ -21,6 +21,11 @@ lazy val scalego_serialization = Project(
   base = file("scalego-serialization"),
   settings = commonSettings,
   dependencies = Seq(scalego_core)
+).settings(
+  libraryDependencies ++= Seq(
+    "org.json4s"  %%  "json4s-core"     %   "3.4.0",
+    "org.json4s"  %%  "json4s-jackson"  %   "3.4.0"
+  )
 )
 
 lazy val scalego = Project(id = "scalego", base = file(".")).aggregate(
