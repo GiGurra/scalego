@@ -54,3 +54,25 @@ Have a look at
 * scalego-serialization-json : A first use/implementantation of scalego-serialization
 
 All extensions are built separately on top of scalego-core without intrusive code. 
+
+Here is some example code using scalego-serialization-json:
+
+```scala
+
+val serializer = JsonSerializer[StringIds]()
+import serializer._
+
+implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
+implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
+
+val ecs = ECS(positionSystem, velocitySystem)
+
+Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
+Entity.Builder + Position(5, 6) + Velocity(7, 8) build(entityId = "2")
+
+val ugly = ecs.toJson(pretty = false)
+val pretty = ecs.toJson(pretty = true)
+
+ugly shouldBe "{\"systems\":[{\"systemId\":\"position\",\"components\":[{\"id\":\"2\",\"data\":{\"x\":5,\"y\":6}},{\"id\":\"1\",\"data\":{\"x\":1,\"y\":2}}]},{\"systemId\":\"velocity\",\"components\":[{\"id\":\"2\",\"data\":{\"x\":7,\"y\":8}},{\"id\":\"1\",\"data\":{\"x\":3,\"y\":4}}]}]}"
+
+```
