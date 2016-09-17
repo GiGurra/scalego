@@ -26,16 +26,16 @@ object Entity {
 
   object Builder {
     def +[ComponentType, T_IdTypes <: IdTypes](component: ComponentType)(implicit system: System[_ >: ComponentType, T_IdTypes]): EntityBuilder[T_IdTypes] = {
-      EntityBuilder[T_IdTypes](Seq(UnAddedComponent(component, system)))
+      EntityBuilder[T_IdTypes](Seq(PendingComponent(component, system)))
     }
   }
 
-  case class EntityBuilder[T_IdTypes <: IdTypes](components: Seq[UnAddedComponent[_, T_IdTypes]] = new mutable.ArrayBuffer[UnAddedComponent[_, T_IdTypes]]) {
+  case class EntityBuilder[T_IdTypes <: IdTypes](pendingComponents: Seq[PendingComponent[_, T_IdTypes]] = new mutable.ArrayBuffer[PendingComponent[_, T_IdTypes]]) {
     def +[ComponentType](component: ComponentType)(implicit system: System[_ >: ComponentType, T_IdTypes]): EntityBuilder[T_IdTypes] = {
-      EntityBuilder(components :+ UnAddedComponent(component, system))
+      EntityBuilder(pendingComponents :+ PendingComponent(component, system))
     }
     def build(entityId: T_IdTypes#EntityId): Entity[T_IdTypes] = {
-      components.foreach(_.addTo(entityId))
+      pendingComponents.foreach(_.addToSystem(entityId))
       Entity[T_IdTypes](entityId)
     }
   }
@@ -43,12 +43,9 @@ object Entity {
   case class HasNoSuchComponent(entityId: Any, componentType: Class[_])
     extends NoSuchElementException(s"Entity $entityId has no stored component of type ${componentType.getSimpleName}")
 
-  case class UnAddedComponent[ComponentType, T_IdTypes <: IdTypes](component: ComponentType, system: System[ComponentType, T_IdTypes]){
-    def addTo(entityId: T_IdTypes#EntityId): Unit = {
+  case class PendingComponent[ComponentType, T_IdTypes <: IdTypes](component: ComponentType, system: System[ComponentType, T_IdTypes]){
+    def addToSystem(entityId: T_IdTypes#EntityId): Unit = {
       system.put(entityId, component)
-    }
-    def removeFrom(entityId: T_IdTypes#EntityId): Unit = {
-      system.remove(entityId)
     }
   }
 
