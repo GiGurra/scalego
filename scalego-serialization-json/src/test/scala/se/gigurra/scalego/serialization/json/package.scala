@@ -24,12 +24,8 @@ package object json {
   }
 
   case class TestIntermediateType(obj: Any)
-  abstract class TestMapper[T_Types <: Types]() extends Mapper[TestIntermediateType, T_Types] {
+  case class TestMapper[T_Types <: Types]() extends ObjectMapper[TestIntermediateType, T_Types] {
     def obj2intermediary(obj: Any): TestIntermediateType = TestIntermediateType(obj)
     def intermediary2Obj(intermediary: TestIntermediateType, cls: Class[_]): Any = intermediary.obj
-    override def systemId2Intermediary(id: T_Types#SystemId): String = id.toString
-    override def entityId2Intermediary(id: T_Types#EntityId): String = id.toString
-    override def intermediary2SystemId(id: String): T_Types#SystemId
-    override def intermediary2EntityId(id: String): T_Types#EntityId
   }
 }

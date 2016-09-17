@@ -11,10 +11,9 @@ import ECSSerializer._
   * Created by johan on 2016-09-17.
   */
 
-case class ECSSerializer[IntermediaryFormat, T_Types <: Types](mapper: Mapper[IntermediaryFormat, T_Types],
-                                                               knownSubtypes: KnownSubTypes = KnownSubTypes.empty) {
-
-  import mapper._
+case class ECSSerializer[IntermediaryFormat, T_Types <: Types](objectMapper: ObjectMapper[IntermediaryFormat, T_Types],
+                                                               knownSubtypes: KnownSubTypes = KnownSubTypes.empty)
+                                                              (implicit systemIdMapper: IdTypeMapper[T_Types#SystemId], entityIdMapper: IdTypeMapper[T_Types#EntityId]) {
 
   /////////////////////////////
   // Writing
@@ -27,7 +26,7 @@ case class ECSSerializer[IntermediaryFormat, T_Types <: Types](mapper: Mapper[In
 
   implicit class SerializableSystemOpsWrite[ComponentType: ClassTag](system: System[ComponentType, T_Types]) {
     def toSerializable: SerializableSystem[IntermediaryFormat] = {
-      SerializableSystem(systemId2Intermediary(system.typeInfo.id), system.map{case (k,v) => serializeComponent(k, v, system.typeInfo)}.toSeq)
+      SerializableSystem(systemIdMapper.id2Intermediary(system.typeInfo.id), system.map{case (k,v) => serializeComponent(k, v, system.typeInfo)}.toSeq)
     }
 
     private def serializeComponent(id: T_Types#EntityId, component: Any, expectedType: ComponentTypeInfo[_, _]): SerializableComponent[IntermediaryFormat] = {
@@ -36,7 +35,7 @@ case class ECSSerializer[IntermediaryFormat, T_Types <: Types](mapper: Mapper[In
       } else {
         Some(knownSubtypes.class2Id.getOrElse(component.getClass, throw UnknownSubTypeForSerialization(baseType = expectedType.classTag.runtimeClass, subType = component.getClass, "serialize")))
       }
-      SerializableComponent(entityId2Intermediary(id), obj2intermediary(component), subType = typeId)
+      SerializableComponent(entityIdMapper.id2Intermediary(id), objectMapper.obj2intermediary(component), subType = typeId)
     }
   }
 
@@ -47,7 +46,7 @@ case class ECSSerializer[IntermediaryFormat, T_Types <: Types](mapper: Mapper[In
   implicit class SerializableECSOpsRead(ecs: ECS[T_Types]) {
     def append(serializedData: SerializableEcs[IntermediaryFormat]): Unit = {
       for (serializedSystem <- serializedData.systems) {
-        val system = ecs.systems.getOrElse(intermediary2SystemId(serializedSystem.systemId), throw UnknownSystemForDeSerialization(serializedSystem.systemId))
+        val system = ecs.systems.getOrElse(systemIdMapper.intermediary2Id(serializedSystem.systemId), throw UnknownSystemForDeSerialization(serializedSystem.systemId))
         system.asInstanceOf[System[Any, T_Types]].append(serializedSystem.components)
       }
     }
@@ -57,7 +56,7 @@ case class ECSSerializer[IntermediaryFormat, T_Types <: Types](mapper: Mapper[In
     def append(serializedComponents: Seq[SerializableComponent[IntermediaryFormat]]): Unit = {
       val deserializedComponents = serializedComponents.map(_.id).zip(serializedComponents.map(deSerializeComponent(_, system.typeInfo)))
       for ((id, component) <- deserializedComponents) {
-        system.put(intermediary2EntityId(id), component.asInstanceOf[Any])
+        system.put(entityIdMapper.intermediary2Id(id), component.asInstanceOf[Any])
       }
     }
 
@@ -68,7 +67,7 @@ case class ECSSerializer[IntermediaryFormat, T_Types <: Types](mapper: Mapper[In
         case Some(subTypeId) =>
           knownSubtypes.id2Class.getOrElse(subTypeId, throw UnknownSubTypeForSerialization(baseType = expectedType.classTag.runtimeClass, subType = subTypeId, "deserialize"))
       }
-      intermediary2Obj(component.data, cls)
+      objectMapper.intermediary2Obj(component.data, cls)
     }
   }
 

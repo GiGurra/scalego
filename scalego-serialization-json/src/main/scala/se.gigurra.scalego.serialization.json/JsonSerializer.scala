@@ -6,22 +6,17 @@ import org.json4s.jackson.JsonMethods.{compact, parse}
 import org.json4s.jackson.JsonMethods.{pretty => prty}
 import Extraction.{decompose, extract}
 import se.gigurra.scalego.core.{ECS, Types}
-import se.gigurra.scalego.serialization.{ECSSerializer, KnownSubTypes}
+import se.gigurra.scalego.serialization.{ECSSerializer, IdTypeMapper, KnownSubTypes}
 import ECSSerializer._
 
 /**
   * Created by johan on 2016-09-17.
   */
 case class JsonSerializer[T_Types <: Types](knownSubtypes: KnownSubTypes = KnownSubTypes.empty,
-                                            jsonFormats: Formats = DefaultFormats)(
-                                            implicit idTypeMapper: IdTypeMapper[T_Types#SystemId, T_Types#EntityId]) {
+                                            jsonFormats: Formats = DefaultFormats)
+                                           (implicit systemIdMapper: IdTypeMapper[T_Types#SystemId], entityIdMapper: IdTypeMapper[T_Types#EntityId]) {
 
-  private val serializer = new ECSSerializer[JValue, T_Types](new JsonMapper[T_Types](jsonFormats) {
-    override def intermediary2SystemId(id: String): T_Types#SystemId = idTypeMapper.intermediary2SystemId(id)
-    override def intermediary2EntityId(id: String): T_Types#EntityId = idTypeMapper.intermediary2EntityId(id)
-    override def systemId2Intermediary(id: T_Types#SystemId): String = idTypeMapper.compId2Intermediary(id)
-    override def entityId2Intermediary(id: T_Types#EntityId): String = idTypeMapper.entityId2Intermediary(id)
-  }, knownSubtypes)
+  private val serializer = new ECSSerializer[JValue, T_Types](new JsonMapper[T_Types](jsonFormats), knownSubtypes)
 
   /////////////////////////////
   // Writing

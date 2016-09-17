@@ -14,11 +14,6 @@ class ECSSerializerSpec_write
   with Matchers
   with OneInstancePerTest {
 
-  object StringTestMapper extends TestMapper[StringBasedIdTypes] {
-    override def intermediary2SystemId(id: String): String = id
-    override def intermediary2EntityId(id: String): String = id
-  }
-
   "ECSSerializer:write" should {
 
     "Create a serializable representation of an ECS" in {
@@ -33,7 +28,7 @@ class ECSSerializerSpec_write
 
       implicit val formats = KnownSubTypes.empty
 
-      val serializer = ECSSerializer(StringTestMapper)
+      val serializer = ECSSerializer(TestMapper[StringBasedIdTypes]())
       import serializer._
 
       val result = ecs.toSerializable
@@ -56,7 +51,7 @@ class ECSSerializerSpec_write
 
       implicit val baseSystem = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
 
-      val serializer = ECSSerializer(StringTestMapper)
+      val serializer = ECSSerializer(TestMapper[StringBasedIdTypes]())
       import serializer._
       val ecs = ECS(baseSystem)
 
@@ -69,7 +64,7 @@ class ECSSerializerSpec_write
 
       implicit val baseSystem = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
 
-      val serializer = ECSSerializer(StringTestMapper, KnownSubTypes("cool-sub-type-id" -> classOf[SubType]))
+      val serializer = ECSSerializer(TestMapper[StringBasedIdTypes](), KnownSubTypes("cool-sub-type-id" -> classOf[SubType]))
       import serializer._
       val ecs = ECS(baseSystem)
 

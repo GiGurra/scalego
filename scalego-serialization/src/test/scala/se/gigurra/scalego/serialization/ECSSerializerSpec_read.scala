@@ -14,11 +14,6 @@ class ECSSerializerSpec_read
     with Matchers
     with OneInstancePerTest {
 
-    object StringTestMapper extends TestMapper[StringBasedIdTypes] {
-      override def intermediary2SystemId(id: String): String = id
-      override def intermediary2EntityId(id: String): String = id
-    }
-
     "ECSSerializer:read" should {
 
       "Append a serializable representation of an ECS into an existing ECS" in {
@@ -28,7 +23,7 @@ class ECSSerializerSpec_read
 
         val ecs = ECS(positionSystem, velocitySystem)
 
-        val serializer = ECSSerializer(StringTestMapper)
+        val serializer = ECSSerializer(TestMapper[StringBasedIdTypes]())
         import serializer._
 
         val serializedData = SerializableEcs(List(
@@ -55,7 +50,7 @@ class ECSSerializerSpec_read
       "Fail to append a serializable representation of an ECS into an existing ECS if reading unknown system Ids" in {
         val ecs = ECS(new System[Position, StringBasedIdTypes]("position", mutable.HashMap()))
 
-        val serializer = ECSSerializer(StringTestMapper)
+        val serializer = ECSSerializer(TestMapper[StringBasedIdTypes]())
         import serializer._
 
         val serializedData = SerializableEcs(List(
@@ -75,7 +70,7 @@ class ECSSerializerSpec_read
 
       "Fail to append a serializable representation of an ECS into an existing ECS if reading unknown sub type Ids" in {
         val ecs = ECS(new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap()))
-        val serializer = ECSSerializer(StringTestMapper)
+        val serializer = ECSSerializer(TestMapper[StringBasedIdTypes]())
         import serializer._
 
         val serializedData = SerializableEcs(List(
@@ -90,7 +85,7 @@ class ECSSerializerSpec_read
       "Support sub types/class hierarchies if they are properly registered / Append a serializable representation of an ECS" in {
         implicit val system = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
         val ecs = ECS(system)
-        val serializer = ECSSerializer(StringTestMapper, KnownSubTypes("cool-sub-type-id" -> classOf[SubType]))
+        val serializer = ECSSerializer(TestMapper[StringBasedIdTypes](), KnownSubTypes("cool-sub-type-id" -> classOf[SubType]))
         import serializer._
 
         val serializedData = SerializableEcs(List(

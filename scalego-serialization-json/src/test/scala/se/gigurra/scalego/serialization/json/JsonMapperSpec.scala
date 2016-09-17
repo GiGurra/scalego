@@ -14,12 +14,7 @@ class JsonMapperSpec
     with Matchers
     with OneInstancePerTest {
 
-  val dut = new JsonMapper[StringBasedIdTypes]() {
-    override def intermediary2SystemId(id: String): StringBasedIdTypes#SystemId = id
-    override def intermediary2EntityId(id: String): StringBasedIdTypes#EntityId = id
-    override def systemId2Intermediary(id: String): String = id
-    override def entityId2Intermediary(id: String): String = id
-  }
+  val dut = new JsonMapper[StringBasedIdTypes]()
   implicit val fmts = dut.jsonFormats
 
   "JsonMapper" should {
