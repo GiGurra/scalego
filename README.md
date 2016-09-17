@@ -38,12 +38,13 @@ val ecs = ECS(positionSystem, velocitySystem)
 // Add some entities. When you execute the .build(entityId) method the 
 // components get added to the relevant stores. The Entity class actually
 // has no other fields than the entityId
-val e1 = Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
+val e1 = Entity.Builder + Position(1, 2) + Velocity(0, 0) build(entityId = "1")
 val e2 = Entity.Builder + Position(0, 0) build(entityId = "2")
 
 // Add components manually
 ecs.system[Position].put("2", Position(5, 6))
 velocitySystem.put("2", Velocity(7, 8))
+e1 += Velocity(3,4)
 
 // Extract the component data from the ECS ..
 ecs.system[Position].size shouldBe 2
