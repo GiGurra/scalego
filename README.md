@@ -47,10 +47,8 @@ velocitySystem.put("2", Velocity(7, 8)) // Or on the system ..
 e1 += Velocity(3,4) // Or directly on the Entity itself
 
 // Extract the component data from the ECS ..
-ecs.system[Position].size shouldBe 2
-ecs.system[Velocity].size shouldBe 2
-ecs.containsEntity("1") shouldBe true
-ecs.containsEntity("2") shouldBe true
+ecs.system[Position].apply("1") shouldBe Position(1,2)
+ecs.system[Velocity].get("2") shouldBe Some(Velocity(7,8))
 
 // From the systems ..
 positionSystem("1") shouldBe Position(1, 2)
