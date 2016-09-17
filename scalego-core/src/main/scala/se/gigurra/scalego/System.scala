@@ -2,9 +2,10 @@ package se.gigurra.scalego
 
 import scala.collection.mutable
 import scala.language.implicitConversions
+import scala.reflect.runtime.universe.TypeTag
 
-class System[ComponentType, T_Types <: Types](val typeInfo: ComponentTypeInfo[ComponentType, T_Types])
-                                             (private val backingStorage: mutable.Map[T_Types#EntityId, ComponentType]) {
+class System[ComponentType : TypeTag, T_Types <: Types](val typeInfo: ComponentTypeInfo[ComponentType, T_Types])
+                                                       (private val backingStorage: mutable.Map[T_Types#EntityId, ComponentType]) {
 
   def this(componentTypeId: T_Types#ComponentTypeId, backingStorage: mutable.Map[T_Types#EntityId, ComponentType]) = this(new ComponentTypeInfo[ComponentType, T_Types](componentTypeId))(backingStorage)
 
