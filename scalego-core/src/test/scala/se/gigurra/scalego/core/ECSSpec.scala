@@ -12,12 +12,12 @@ class ECSSpec
   with Matchers
   with OneInstancePerTest {
 
-  class StringBasedIdTypes extends Types {
+  class StringBasedIdTypes extends IdTypes {
     override type SystemId = String
     override type EntityId = String
   }
 
-  class LongBasedIdTypes extends Types {
+  class LongBasedIdTypes extends IdTypes {
     override type SystemId = Long
     override type EntityId = Long
   }

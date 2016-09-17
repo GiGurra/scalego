@@ -4,10 +4,10 @@ import scala.collection.mutable
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
-class System[ComponentType : ClassTag, T_Types <: Types](val typeInfo: ComponentTypeInfo[ComponentType, T_Types])
-                                                        (private val backingStorage: mutable.Map[T_Types#EntityId, ComponentType]) {
+class System[ComponentType : ClassTag, T_IdTypes <: IdTypes](val typeInfo: ComponentTypeInfo[ComponentType, T_IdTypes])
+                                                            (private val backingStorage: mutable.Map[T_IdTypes#EntityId, ComponentType]) {
 
-  def this(systemId: T_Types#SystemId, backingStorage: mutable.Map[T_Types#EntityId, ComponentType]) = this(new ComponentTypeInfo[ComponentType, T_Types](systemId))(backingStorage)
+  def this(systemId: T_IdTypes#SystemId, backingStorage: mutable.Map[T_IdTypes#EntityId, ComponentType]) = this(new ComponentTypeInfo[ComponentType, T_IdTypes](systemId))(backingStorage)
 
   override def hashCode(): Int = {
     typeInfo.hashCode() + backingStorage.hashCode()
@@ -25,7 +25,7 @@ class System[ComponentType : ClassTag, T_Types <: Types](val typeInfo: Component
 }
 
 object System {
-  implicit def system2map[ComponentType, T_Types <: Types](system: System[ComponentType, T_Types]): mutable.Map[T_Types#EntityId, ComponentType] = {
+  implicit def system2map[ComponentType, T_IdTypes <: IdTypes](system: System[ComponentType, T_IdTypes]): mutable.Map[T_IdTypes#EntityId, ComponentType] = {
     system.backingStorage
   }
 }

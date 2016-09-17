@@ -1,6 +1,6 @@
 package se.gigurra.scalego.serialization
 
-import se.gigurra.scalego.core.{ComponentTypeInfo, ECS, System, Types}
+import se.gigurra.scalego.core.{ComponentTypeInfo, ECS, System, IdTypes}
 
 import scala.language.implicitConversions
 import scala.language.existentials
@@ -11,25 +11,25 @@ import ECSSerializer._
   * Created by johan on 2016-09-17.
   */
 
-case class ECSSerializer[IntermediaryFormat, T_Types <: Types](objectMapper: ObjectMapper[IntermediaryFormat, T_Types],
-                                                               knownSubtypes: KnownSubTypes = KnownSubTypes.empty)
-                                                              (implicit systemIdMapper: IdTypeMapper[T_Types#SystemId], entityIdMapper: IdTypeMapper[T_Types#EntityId]) {
+case class ECSSerializer[IntermediaryFormat, T_IdTypes <: IdTypes](objectMapper: ObjectMapper[IntermediaryFormat, T_IdTypes],
+                                                                 knownSubtypes: KnownSubTypes = KnownSubTypes.empty)
+                                                                (implicit systemIdMapper: IdTypeMapper[T_IdTypes#SystemId], entityIdMapper: IdTypeMapper[T_IdTypes#EntityId]) {
 
   /////////////////////////////
   // Writing
 
-  implicit class SerializableECSOpsWrite(ecs: ECS[T_Types]) {
+  implicit class SerializableECSOpsWrite(ecs: ECS[T_IdTypes]) {
     def toSerializable: SerializableEcs[IntermediaryFormat] = {
       SerializableEcs[IntermediaryFormat](ecs.systems.values.map { _.toSerializable }.toSeq)
     }
   }
 
-  implicit class SerializableSystemOpsWrite[ComponentType: ClassTag](system: System[ComponentType, T_Types]) {
+  implicit class SerializableSystemOpsWrite[ComponentType: ClassTag](system: System[ComponentType, T_IdTypes]) {
     def toSerializable: SerializableSystem[IntermediaryFormat] = {
       SerializableSystem(systemIdMapper.id2Intermediary(system.typeInfo.id), system.map{case (k,v) => serializeComponent(k, v, system.typeInfo)}.toSeq)
     }
 
-    private def serializeComponent(id: T_Types#EntityId, component: Any, expectedType: ComponentTypeInfo[_, _]): SerializableComponent[IntermediaryFormat] = {
+    private def serializeComponent(id: T_IdTypes#EntityId, component: Any, expectedType: ComponentTypeInfo[_, _]): SerializableComponent[IntermediaryFormat] = {
       val typeId = if (component.getClass == expectedType.classTag.runtimeClass) {
         None
       } else {
@@ -43,16 +43,16 @@ case class ECSSerializer[IntermediaryFormat, T_Types <: Types](objectMapper: Obj
   //////////////////////////////
   // Reading
 
-  implicit class SerializableECSOpsRead(ecs: ECS[T_Types]) {
+  implicit class SerializableECSOpsRead(ecs: ECS[T_IdTypes]) {
     def append(serializedData: SerializableEcs[IntermediaryFormat]): Unit = {
       for (serializedSystem <- serializedData.systems) {
         val system = ecs.systems.getOrElse(systemIdMapper.intermediary2Id(serializedSystem.systemId), throw UnknownSystemForDeSerialization(serializedSystem.systemId))
-        system.asInstanceOf[System[Any, T_Types]].append(serializedSystem.components)
+        system.asInstanceOf[System[Any, T_IdTypes]].append(serializedSystem.components)
       }
     }
   }
 
-  implicit class SerializableSystemOpsRead(system: System[Any, T_Types]) {
+  implicit class SerializableSystemOpsRead(system: System[Any, T_IdTypes]) {
     def append(serializedComponents: Seq[SerializableComponent[IntermediaryFormat]]): Unit = {
       val deserializedComponents = serializedComponents.map(_.id).zip(serializedComponents.map(deSerializeComponent(_, system.typeInfo)))
       for ((id, component) <- deserializedComponents) {

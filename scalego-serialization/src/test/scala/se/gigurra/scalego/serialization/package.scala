@@ -1,6 +1,6 @@
 package se.gigurra.scalego
 
-import se.gigurra.scalego.core.Types
+import se.gigurra.scalego.core.IdTypes
 
 /**
   * Created by johan on 2016-09-17.
@@ -13,18 +13,18 @@ package object serialization {
   case class Position(x: Int, y: Int)
   case class Velocity(x: Int, y: Int)
 
-  class StringBasedIdTypes extends Types {
+  class StringBasedIdTypes extends IdTypes {
     override type SystemId = String
     override type EntityId = String
   }
 
-  class LongBasedIdTypes extends Types {
+  class LongBasedIdTypes extends IdTypes {
     override type SystemId = Long
     override type EntityId = Long
   }
 
   case class TestIntermediateType(obj: Any)
-  case class TestMapper[T_Types <: Types]() extends ObjectMapper[TestIntermediateType, T_Types] {
+  case class TestMapper[T_IdTypes <: IdTypes]() extends ObjectMapper[TestIntermediateType, T_IdTypes] {
     def obj2intermediary(obj: Any): TestIntermediateType = TestIntermediateType(obj)
     def intermediary2Obj(intermediary: TestIntermediateType, cls: Class[_]): Any = intermediary.obj
   }

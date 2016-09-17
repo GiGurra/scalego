@@ -5,23 +5,23 @@ import org.json4s.{DefaultFormats, Extraction, Formats}
 import org.json4s.jackson.JsonMethods.{compact, parse}
 import org.json4s.jackson.JsonMethods.{pretty => prty}
 import Extraction.{decompose, extract}
-import se.gigurra.scalego.core.{ECS, Types}
+import se.gigurra.scalego.core.{ECS, IdTypes}
 import se.gigurra.scalego.serialization.{ECSSerializer, IdTypeMapper, KnownSubTypes}
 import ECSSerializer._
 
 /**
   * Created by johan on 2016-09-17.
   */
-case class JsonSerializer[T_Types <: Types](knownSubtypes: KnownSubTypes = KnownSubTypes.empty,
-                                            jsonFormats: Formats = DefaultFormats)
-                                           (implicit systemIdMapper: IdTypeMapper[T_Types#SystemId], entityIdMapper: IdTypeMapper[T_Types#EntityId]) {
+case class JsonSerializer[T_IdTypes <: IdTypes](knownSubtypes: KnownSubTypes = KnownSubTypes.empty,
+                                              jsonFormats: Formats = DefaultFormats)
+                                             (implicit systemIdMapper: IdTypeMapper[T_IdTypes#SystemId], entityIdMapper: IdTypeMapper[T_IdTypes#EntityId]) {
 
-  private val serializer = new ECSSerializer[JValue, T_Types](new JsonMapper[T_Types](jsonFormats), knownSubtypes)
+  private val serializer = new ECSSerializer[JValue, T_IdTypes](new JsonMapper[T_IdTypes](jsonFormats), knownSubtypes)
 
   /////////////////////////////
   // Writing
 
-  implicit class SerializableOpsWrite(ecs: ECS[T_Types]) {
+  implicit class SerializableOpsWrite(ecs: ECS[T_IdTypes]) {
     def toJson(pretty: Boolean = false): String = {
       val map = serializer.SerializableECSOpsWrite(ecs).toSerializable
       if (pretty) prty(decompose(map)(jsonFormats))
@@ -33,7 +33,7 @@ case class JsonSerializer[T_Types <: Types](knownSubtypes: KnownSubTypes = Known
   //////////////////////////////
   // Reading
 
-  implicit class SerializableOpsRead(ecs: ECS[T_Types]) {
+  implicit class SerializableOpsRead(ecs: ECS[T_IdTypes]) {
     def appendJson(json: String): Unit = {
       val intermediaryFormat = extract[SerializableEcs[JValue]](parse(json))(jsonFormats, implicitly[Manifest[SerializableEcs[JValue]]])
       serializer.SerializableECSOpsRead(ecs).append(intermediaryFormat)

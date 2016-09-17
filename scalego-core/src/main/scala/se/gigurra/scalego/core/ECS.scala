@@ -5,21 +5,21 @@ import scala.language.implicitConversions
 /**
   * Created by johan on 2016-06-11.
   */
-class ECS[T_Types <: Types] private(val systems: Map[T_Types#SystemId, System[_, T_Types]]) {
+class ECS[T_IdTypes <: IdTypes] private(val systems: Map[T_IdTypes#SystemId, System[_, T_IdTypes]]) {
 
-  def system[T](implicit typeInfo: ComponentTypeInfo[T, T_Types]): System[T, T_Types] = {
-    systems.getOrElse(typeInfo.id, throw new RuntimeException(s"No system of type ${typeInfo.id} in $this")).asInstanceOf[System[T, T_Types]]
+  def system[T](implicit typeInfo: ComponentTypeInfo[T, T_IdTypes]): System[T, T_IdTypes] = {
+    systems.getOrElse(typeInfo.id, throw new RuntimeException(s"No system of type ${typeInfo.id} in $this")).asInstanceOf[System[T, T_IdTypes]]
   }
 
-  def -=(entity: T_Types#EntityId): Unit = {
+  def -=(entity: T_IdTypes#EntityId): Unit = {
     systems.values.foreach(_ -= entity)
   }
 
-  def containsEntity(entity: T_Types#EntityId): Boolean = {
+  def containsEntity(entity: T_IdTypes#EntityId): Boolean = {
     systems.values.exists(_.contains(entity))
   }
 
-  def componentsOf(entity: T_Types#EntityId): Seq[Any] = {
+  def componentsOf(entity: T_IdTypes#EntityId): Seq[Any] = {
     systems.values.flatMap(_.get(entity)).toSeq
   }
 
@@ -49,7 +49,7 @@ class ECS[T_Types <: Types] private(val systems: Map[T_Types#SystemId, System[_,
 }
 
 object ECS {
-  def apply[T_Types <: Types](systems: System[_, T_Types]*): ECS[T_Types] = {
-    new ECS[T_Types](systems.map(system => system.typeInfo.id -> system).toMap)
+  def apply[T_IdTypes <: IdTypes](systems: System[_, T_IdTypes]*): ECS[T_IdTypes] = {
+    new ECS[T_IdTypes](systems.map(system => system.typeInfo.id -> system).toMap)
   }
 }
