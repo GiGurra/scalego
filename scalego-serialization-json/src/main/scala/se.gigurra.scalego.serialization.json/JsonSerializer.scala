@@ -6,12 +6,13 @@ import org.json4s.jackson.JsonMethods.{compact, parse}
 import org.json4s.jackson.JsonMethods.{pretty => prty}
 import Extraction.{decompose, extract}
 import se.gigurra.scalego.core.{ECS, Types}
-import se.gigurra.scalego.serialization.{ECSSerializer, KnownSubtypes, SerializableEcs}
+import se.gigurra.scalego.serialization.{ECSSerializer, KnownSubTypes}
+import ECSSerializer._
 
 /**
   * Created by johan on 2016-09-17.
   */
-case class JsonSerializer[T_Types <: Types](knownSubtypes: KnownSubtypes = KnownSubtypes.empty,
+case class JsonSerializer[T_Types <: Types](knownSubtypes: KnownSubTypes = KnownSubTypes.empty,
                                             jsonFormats: Formats = DefaultFormats)(
                                             implicit idTypeMapper: IdTypeMapper[T_Types#SystemId, T_Types#EntityId]) {
 

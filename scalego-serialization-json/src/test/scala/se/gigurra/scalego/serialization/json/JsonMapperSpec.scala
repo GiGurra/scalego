@@ -2,13 +2,9 @@ package se.gigurra.scalego.serialization.json
 
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, OneInstancePerTest, WordSpec}
-import se.gigurra.scalego.core.{ECS, System}
-import se.gigurra.scalego.serialization.ECSSerializerSpec._
 
-import scala.collection.mutable
 import scala.language.postfixOps
 import org.json4s._
-import org.json4s.jackson.JsonMethods._
 import Extraction._
 import JsonMapperSpec._
 

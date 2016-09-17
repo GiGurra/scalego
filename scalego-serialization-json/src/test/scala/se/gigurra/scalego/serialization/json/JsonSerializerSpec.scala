@@ -3,7 +3,6 @@ package se.gigurra.scalego.serialization.json
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, OneInstancePerTest, WordSpec}
 import se.gigurra.scalego.core.{ECS, Entity, System}
-import se.gigurra.scalego.serialization.ECSSerializerSpec._
 
 import scala.collection.mutable
 import scala.language.postfixOps

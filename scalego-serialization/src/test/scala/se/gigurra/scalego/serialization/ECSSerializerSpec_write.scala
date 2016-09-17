@@ -6,7 +6,7 @@ import se.gigurra.scalego.core.{ECS, Entity, System}
 
 import scala.collection.mutable
 import scala.language.postfixOps
-import ECSSerializerSpec._
+import ECSSerializer._
 
 class ECSSerializerSpec_write
   extends WordSpec
@@ -31,7 +31,7 @@ class ECSSerializerSpec_write
       Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
       Entity.Builder + Position(5, 6) + Velocity(7, 8) build(entityId = "2")
 
-      implicit val formats = KnownSubtypes.empty
+      implicit val formats = KnownSubTypes.empty
 
       val serializer = ECSSerializer(StringTestMapper)
       import serializer._
@@ -69,7 +69,7 @@ class ECSSerializerSpec_write
 
       implicit val baseSystem = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
 
-      val serializer = ECSSerializer(StringTestMapper, KnownSubtypes("cool-sub-type-id" -> classOf[SubType]))
+      val serializer = ECSSerializer(StringTestMapper, KnownSubTypes("cool-sub-type-id" -> classOf[SubType]))
       import serializer._
       val ecs = ECS(baseSystem)
 

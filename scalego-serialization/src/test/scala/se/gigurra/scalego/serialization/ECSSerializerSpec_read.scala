@@ -3,7 +3,7 @@ package se.gigurra.scalego.serialization
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, OneInstancePerTest, WordSpec}
 import se.gigurra.scalego.core.{ECS, System}
-import se.gigurra.scalego.serialization.ECSSerializerSpec._
+import ECSSerializer._
 
 import scala.collection.mutable
 import scala.language.postfixOps
@@ -90,7 +90,7 @@ class ECSSerializerSpec_read
       "Support sub types/class hierarchies if they are properly registered / Append a serializable representation of an ECS" in {
         implicit val system = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
         val ecs = ECS(system)
-        val serializer = ECSSerializer(StringTestMapper, KnownSubtypes("cool-sub-type-id" -> classOf[SubType]))
+        val serializer = ECSSerializer(StringTestMapper, KnownSubTypes("cool-sub-type-id" -> classOf[SubType]))
         import serializer._
 
         val serializedData = SerializableEcs(List(

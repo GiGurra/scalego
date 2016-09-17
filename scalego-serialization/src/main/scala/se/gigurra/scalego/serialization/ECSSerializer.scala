@@ -5,21 +5,14 @@ import se.gigurra.scalego.core.{ComponentTypeInfo, ECS, System, Types}
 import scala.language.implicitConversions
 import scala.language.existentials
 import scala.reflect.ClassTag
+import ECSSerializer._
 
 /**
   * Created by johan on 2016-09-17.
   */
-trait Mapper[IntermediaryFormat, T_Types <: Types] {
-  def obj2intermediary(obj: Any): IntermediaryFormat
-  def intermediary2Obj(obj: IntermediaryFormat, cls: Class[_]): Any
-  def compId2Intermediary(id: T_Types#SystemId): String
-  def intermediary2CompId(id: String): T_Types#SystemId
-  def entityId2Intermediary(id: T_Types#EntityId): String
-  def intermediary2entityId(id: String): T_Types#EntityId
-}
 
 case class ECSSerializer[IntermediaryFormat, T_Types <: Types](mapper: Mapper[IntermediaryFormat, T_Types],
-                                                               knownSubtypes: KnownSubtypes = KnownSubtypes.empty) {
+                                                               knownSubtypes: KnownSubTypes = KnownSubTypes.empty) {
 
   import mapper._
 
@@ -84,29 +77,18 @@ case class ECSSerializer[IntermediaryFormat, T_Types <: Types](mapper: Mapper[In
 //////////////////////////////
 // Common
 
-case class SerializableEcs[IntermediaryFormat](systems: Seq[SerializableSystem[IntermediaryFormat]])
-case class SerializableSystem[IntermediaryFormat](systemId: String, components: Seq[SerializableComponent[IntermediaryFormat]])
-case class SerializableComponent[IntermediaryFormat](id: String, data: IntermediaryFormat, subType: Option[String])
+object ECSSerializer {
 
-case class KnownSubtypes(mappings: Set[(String, Class[_])]) {
-  val id2Class: Map[String, Class[_]] = mappings.toMap
-  val class2Id: Map[Class[_], String] = id2Class.map(_.swap)
-  def +(newMappings: Set[(String, Class[_])]): KnownSubtypes = KnownSubtypes(mappings ++ newMappings)
-  def +(newFormats: KnownSubtypes): KnownSubtypes = KnownSubtypes(mappings ++ newFormats.mappings)
-  def +(newMapping: (String, Class[_])): KnownSubtypes = KnownSubtypes(mappings + newMapping)
+  case class SerializableEcs[IntermediaryFormat](systems: Seq[SerializableSystem[IntermediaryFormat]])
+  case class SerializableSystem[IntermediaryFormat](systemId: String, components: Seq[SerializableComponent[IntermediaryFormat]])
+  case class SerializableComponent[IntermediaryFormat](id: String, data: IntermediaryFormat, subType: Option[String])
+
+  class SerializationException(msg: String) extends RuntimeException(msg)
+
+  case class UnknownSubTypeForSerialization(baseType: Class[_], subType: Any, op: String)
+    extends SerializationException(s"Failed to $op unregistered/unknown type ($subType). Expected type $baseType or any of it's known subtypes")
+
+  case class UnknownSystemForDeSerialization(systemId: Any)
+    extends SerializationException(s"Failed deserialize components for system '$systemId' - No such system is created locally!")
+
 }
-
-object KnownSubtypes {
-  def apply(mappings: (String, Class[_])*): KnownSubtypes = new KnownSubtypes(mappings.toSet)
-  def fromShortClassName(types: Class[_]*): KnownSubtypes = apply(types.map(t => t.getSimpleName -> t): _*)
-  def fromFullClassName(types: Class[_]*): KnownSubtypes = apply(types.map(t => t.getName -> t): _*)
-  val empty: KnownSubtypes = apply()
-}
-
-class SerializationException(msg: String) extends RuntimeException(msg)
-
-case class UnknownSubTypeForSerialization(baseType: Class[_], subType: Any, op: String)
-  extends SerializationException(s"Failed to $op unregistered/unknown type ($subType). Expected type $baseType or any of it's known subtypes")
-
-case class UnknownSystemForDeSerialization(systemId: Any)
-  extends SerializationException(s"Failed deserialize components for system '$systemId' - No such system is created locally!")
