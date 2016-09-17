@@ -57,7 +57,7 @@ e2.get[Position] shouldBe Some(Position(5,6))
 e2.get[Velocity] shouldBe Some(Velocity(7,8))
 
 // Systems can be treated as mutable.Map's
-// Entities can be through of as lenses to a set of Options
+// Entities can be through of as lenses to Options
 
 
 ```
