@@ -56,7 +56,7 @@ case class ECSSerializer[IntermediaryFormat, T_IdTypes <: IdTypes](objectMapper:
     def append(serializedComponents: Seq[SerializableComponent[IntermediaryFormat]]): Unit = {
       val deserializedComponents = serializedComponents.map(_.id).zip(serializedComponents.map(deSerializeComponent(_, system.typeInfo)))
       for ((id, component) <- deserializedComponents) {
-        system.put(entityIdMapper.intermediary2Id(id), component.asInstanceOf[Any])
+        system.put(entityIdMapper.intermediary2Id(id), component)
       }
     }
 
