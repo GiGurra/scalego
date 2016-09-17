@@ -28,7 +28,7 @@ case class Velocity(x: Int, y: Int)
 
 // Create your systems - All component data is stored inside these systems. 
 // You can pick the backing storage type yourself, as long as you implement scala's mutable.Map trait. 
-// In these examples I will use scala regular mutable.HashMap
+// In these examples I will use scala's regular mutable.HashMap
 implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
 implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
 
