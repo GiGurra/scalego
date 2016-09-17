@@ -39,7 +39,10 @@ val ecs = ECS(positionSystem, velocitySystem)
 // components get added to the relevant stores. The Entity class actually
 // has no other fields than the entityId
 val e1 = Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
-val e2 = Entity.Builder + Position(5, 6) + Velocity(7, 8) build(entityId = "2")
+val e2 = Entity.Builder + Position(0, 0) build(entityId = "2")
+
+// You can also add components manually
+ecs.system[Velocity].put("2", Velocity(7, 8))
 
 // You can extract the component data from the ECS ..
 ecs.system[Position].size shouldBe 2
