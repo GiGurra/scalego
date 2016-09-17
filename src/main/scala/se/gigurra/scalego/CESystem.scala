@@ -9,7 +9,7 @@ class CESystem[ComponentType, T_Types <: Types](val typeInfo: ComponentTypeInfo[
 
   override def equals(other: Any): Boolean = {
     other match {
-      case other: CESystem[_, _] => typeInfo == other.typeInfo && super.equals(other)
+      case other: CESystem[_, _] => typeInfo == other.typeInfo && backingStorage == other.backingStorage
       case _ => false
     }
   }
