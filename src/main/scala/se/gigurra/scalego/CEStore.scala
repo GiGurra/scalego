@@ -26,10 +26,7 @@ class CEStore[T_Types <: Types] private(systems: Map[T_Types#ComponentTypeId, CE
 }
 
 object CEStore {
-  case class Builder[T_Types <: Types](systems: Map[T_Types#ComponentTypeId, CESystem[_, T_Types]] = Map.empty[T_Types#ComponentTypeId, CESystem[_, T_Types]]) {
-    def +[T](system: CESystem[T, T_Types]): Builder[T_Types] = {
-      Builder(systems + (system.typeInfo.id -> system.asInstanceOf[CESystem[_, T_Types]]))
-    }
-    def build: CEStore[T_Types] = new CEStore(systems)
+  def apply[T_Types <: Types](systems: CESystem[_, T_Types]*): CEStore[T_Types] = {
+    new CEStore[T_Types](systems.map(system => system.typeInfo.id -> system).toMap)
   }
 }

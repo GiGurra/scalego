@@ -27,12 +27,12 @@ class CEStoreSpec
   "CEStore" should {
 
     "Be created" in {
-      noException should be thrownBy (CEStore.Builder[StringBasedIdTypes]() build : CEStore[StringBasedIdTypes])
+      noException should be thrownBy CEStore()
     }
 
     "Add a system" in {
       val positionSystem = new CESystem(ComponentTypeInfo[(Int, Int), StringBasedIdTypes]("position"))(mutable.HashMap())
-      noException should be thrownBy (CEStore.Builder[StringBasedIdTypes]() + positionSystem build : CEStore[StringBasedIdTypes])
+      noException should be thrownBy CEStore(positionSystem)
     }
 
     "Get the system of a component type" in {
@@ -42,7 +42,7 @@ class CEStoreSpec
       implicit val velocityTypeInfo = ComponentTypeInfo[Velocity, StringBasedIdTypes]("velocity")
       val positionSystem = new CESystem(positionTypeInfo)(mutable.HashMap())
       val velocitySystem = new CESystem(velocityTypeInfo)(mutable.HashMap())
-      val store = CEStore.Builder[StringBasedIdTypes]() + positionSystem + velocitySystem build
+      val store = CEStore(positionSystem, velocitySystem)
 
       store.system[Position] shouldBe positionSystem
       store.system[Velocity] shouldBe velocitySystem
@@ -57,7 +57,7 @@ class CEStoreSpec
       implicit val positionSystem = new CESystem(positionTypeInfo)(mutable.HashMap())
       implicit val velocitySystem = new CESystem(velocityTypeInfo)(mutable.HashMap())
 
-      val store = CEStore.Builder[StringBasedIdTypes]() + positionSystem + velocitySystem build
+      val store = CEStore(positionSystem, velocitySystem)
 
       val e1 = store.entityBuilder(entityId = "1") + Position(1, 2) + Velocity(3, 4) build
       val e2 = store.entityBuilder(entityId = "2") + Position(5, 6) + Velocity(7, 8) build
@@ -81,7 +81,7 @@ class CEStoreSpec
       implicit val positionSystem = new CESystem(positionTypeInfo)(mutable.HashMap())
       implicit val velocitySystem = new CESystem(velocityTypeInfo)(mutable.HashMap())
 
-      val store = CEStore.Builder[StringBasedIdTypes]() + positionSystem + velocitySystem build
+      val store = CEStore(positionSystem, velocitySystem)
 
       val e1 = store.entityBuilder(entityId = "1") + Position(1, 2) + Velocity(3, 4) build
       val e2 = store.entityBuilder(entityId = "2") + Position(5, 6) + Velocity(7, 8) build
@@ -108,7 +108,7 @@ class CEStoreSpec
       implicit val positionSystem = new CESystem(positionTypeInfo)(mutable.HashMap())
       implicit val velocitySystem = new CESystem(velocityTypeInfo)(mutable.LongMap())
 
-      val store = CEStore.Builder[LongBasedIdTypes]() + positionSystem + velocitySystem build
+      val store = CEStore(positionSystem, velocitySystem)
 
       val e1 = store.entityBuilder(entityId = 1) + Position(1, 2) + Velocity(3, 4) build
       val e2 = store.entityBuilder(entityId = 2) + Position(5, 6) + Velocity(7, 8) build
