@@ -16,7 +16,7 @@ Try Scalego!
 
 import se.gigurra.scalego.core._
 
-// Decide what kind of types you want to use as entity and system Ids
+// Decide the types you want to use as entity/system Ids
 type StringIds = IdTypes {
   type SystemId = String
   type EntityId = String
