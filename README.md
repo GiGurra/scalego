@@ -76,9 +76,7 @@ Have a look at
 * scalego-serialization : A plug-in serialization API for scalego ECS 
 * scalego-serialization-json : Implementantation of scalego-serialization using json4s
 
-All extensions are built separately on top of scalego-core without intrusive code. 
-
-Here is some example code using scalego-serialization-json:
+Example code using scalego-serialization-json:
 
 ```scala
 
