@@ -1,13 +1,13 @@
 package se.gigurra.scalego.core
 
 import scala.language.implicitConversions
-import scala.reflect.runtime.universe.TypeTag
+import scala.reflect.ClassTag
 
 /**
   * Created by johan on 2016-06-26.
   */
-case class ComponentTypeInfo[ComponentType: TypeTag, T_Types <: Types](id: T_Types#ComponentTypeId) {
-  def typeTag: TypeTag[ComponentType] = implicitly[TypeTag[ComponentType]]
+case class ComponentTypeInfo[ComponentType: ClassTag, T_Types <: Types](id: T_Types#ComponentTypeId) {
+  def classTag: ClassTag[ComponentType] = implicitly[ClassTag[ComponentType]]
 }
 
 object ComponentTypeInfo {

@@ -16,7 +16,7 @@ class ECS[T_Types <: Types] private(val systems: Map[T_Types#ComponentTypeId, Sy
     systems.values.foreach(_ -= entity)
   }
 
-  def contains(entity: T_Types#EntityId): Boolean = {
+  def containsEntity(entity: T_Types#EntityId): Boolean = {
     systems.values.exists(_.contains(entity))
   }
 

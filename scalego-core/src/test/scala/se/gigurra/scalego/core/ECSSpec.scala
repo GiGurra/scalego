@@ -57,8 +57,8 @@ class ECSSpec
 
       ecs.system[Position].size shouldBe 2
       ecs.system[Velocity].size shouldBe 2
-      ecs.contains("1") shouldBe true
-      ecs.contains("2") shouldBe true
+      ecs.containsEntity("1") shouldBe true
+      ecs.containsEntity("2") shouldBe true
 
       e1[Position] shouldBe Position(1,2)
       e1[Velocity] shouldBe Velocity(3,4)
@@ -101,8 +101,8 @@ class ECSSpec
 
       ecs.system[Position].size shouldBe 1
       ecs.system[Velocity].size shouldBe 1
-      ecs.contains("1") shouldBe false
-      ecs.contains("2") shouldBe true
+      ecs.containsEntity("1") shouldBe false
+      ecs.containsEntity("2") shouldBe true
 
       a[Entity.HasNoSuchComponent] should be thrownBy e1[Position]
       a[Entity.HasNoSuchComponent] should be thrownBy e1[Velocity]
@@ -123,8 +123,8 @@ class ECSSpec
 
       ecs.system[Position].size shouldBe 1
       ecs.system[Velocity].size shouldBe 1
-      ecs.contains(1) shouldBe false
-      ecs.contains(2) shouldBe true
+      ecs.containsEntity(1) shouldBe false
+      ecs.containsEntity(2) shouldBe true
 
       a[Entity.HasNoSuchComponent] should be thrownBy e1[Position]
       a[Entity.HasNoSuchComponent] should be thrownBy e1[Velocity]
