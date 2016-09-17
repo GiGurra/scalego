@@ -41,11 +41,11 @@ val ecs = ECS(positionSystem, velocitySystem)
 val e1 = Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
 val e2 = Entity.Builder + Position(0, 0) build(entityId = "2")
 
-// You can also add components manually
+// Add components manually
 ecs.system[Position].put("2", Position(5, 6))
 velocitySystem.put("2", Velocity(7, 8))
 
-// You can extract the component data from the ECS ..
+// Extract the component data from the ECS ..
 ecs.system[Position].size shouldBe 2
 ecs.system[Velocity].size shouldBe 2
 ecs.containsEntity("1") shouldBe true
