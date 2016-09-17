@@ -4,7 +4,6 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, OneInstancePerTest, WordSpec}
 import se.gigurra.scalego.core.{ECS, System}
 import se.gigurra.scalego.serialization.ECSSerializerSpec._
-import org.json4s.Extraction._
 
 import scala.collection.mutable
 import scala.language.postfixOps
@@ -15,6 +14,11 @@ class ECSSerializerSpec_read
     with Matchers
     with OneInstancePerTest {
 
+    object StringTestMapper extends TestMapper[StringBasedIdTypes] {
+      override def intermediary2CompId(id: String): String = id
+      override def intermediary2entityId(id: String): String = id
+    }
+
     "ECSSerializer:read" should {
 
       "Append a serializable representation of an ECS into an existing ECS" in {
@@ -24,17 +28,17 @@ class ECSSerializerSpec_read
 
         val ecs = ECS(positionSystem, velocitySystem)
 
-        val serializer = ECSSerializer(JsonTestMapper)
+        val serializer = ECSSerializer(StringTestMapper)
         import serializer._
 
         val serializedData = SerializableEcs(List(
           SerializableSystem(systemId = "position", List(
-            SerializableComponent(id = "2", decompose(Map("x" -> 5, "y" -> 6)), subType = None),
-            SerializableComponent(id = "1", decompose(Map("x" -> 1, "y" -> 2)), subType = None)
+            SerializableComponent(id = "2", TestIntermediateType(Position(5, 6)), subType = None),
+            SerializableComponent(id = "1", TestIntermediateType(Position(1, 2)), subType = None)
           )),
           SerializableSystem(systemId = "velocity", List(
-            SerializableComponent(id = "2", decompose(Map("x" -> 7, "y" -> 8)), subType = None),
-            SerializableComponent(id = "1", decompose(Map("x" -> 3, "y" -> 4)), subType = None)
+            SerializableComponent(id = "2", TestIntermediateType(Velocity(7, 8)), subType = None),
+            SerializableComponent(id = "1", TestIntermediateType(Velocity(3, 4)), subType = None)
           ))
         ))
 
@@ -51,17 +55,17 @@ class ECSSerializerSpec_read
       "Fail to append a serializable representation of an ECS into an existing ECS if reading unknown system Ids" in {
         val ecs = ECS(new System[Position, StringBasedIdTypes]("position", mutable.HashMap()))
 
-        val serializer = ECSSerializer(JsonTestMapper)
+        val serializer = ECSSerializer(StringTestMapper)
         import serializer._
 
         val serializedData = SerializableEcs(List(
           SerializableSystem(systemId = "position", List(
-            SerializableComponent(id = "2", decompose(Map("x" -> 5, "y" -> 6)), subType = None),
-            SerializableComponent(id = "1", decompose(Map("x" -> 1, "y" -> 2)), subType = None)
+            SerializableComponent(id = "2", TestIntermediateType(Position(5, 6)), subType = None),
+            SerializableComponent(id = "1", TestIntermediateType(Position(1, 2)), subType = None)
           )),
           SerializableSystem(systemId = "velocity", List(
-            SerializableComponent(id = "2", decompose(Map("x" -> 7, "y" -> 8)), subType = None),
-            SerializableComponent(id = "1", decompose(Map("x" -> 3, "y" -> 4)), subType = None)
+            SerializableComponent(id = "2", TestIntermediateType(Velocity(7, 8)), subType = None),
+            SerializableComponent(id = "1", TestIntermediateType(Velocity(3, 4)), subType = None)
           ))
         ))
 
@@ -71,12 +75,12 @@ class ECSSerializerSpec_read
 
       "Fail to append a serializable representation of an ECS into an existing ECS if reading unknown sub type Ids" in {
         val ecs = ECS(new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap()))
-        val serializer = ECSSerializer(JsonTestMapper)
+        val serializer = ECSSerializer(StringTestMapper)
         import serializer._
 
         val serializedData = SerializableEcs(List(
           SerializableSystem(systemId = "base-type", Seq(
-            SerializableComponent(id = "1", decompose(Map("x" -> 1, "y" -> 2)), subType = Some("cool-sub-type-id"))
+            SerializableComponent(id = "1", TestIntermediateType(SubType(1, 2)), subType = Some("cool-sub-type-id"))
           ))
         ))
 
@@ -86,12 +90,12 @@ class ECSSerializerSpec_read
       "Support sub types/class hierarchies if they are properly registered / Append a serializable representation of an ECS" in {
         implicit val system = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
         val ecs = ECS(system)
-        val serializer = ECSSerializer(JsonTestMapper, SerializationFormats("cool-sub-type-id" -> classOf[SubType]))
+        val serializer = ECSSerializer(StringTestMapper, KnownSubtypes("cool-sub-type-id" -> classOf[SubType]))
         import serializer._
 
         val serializedData = SerializableEcs(List(
           SerializableSystem(systemId = "base-type", Seq(
-            SerializableComponent(id = "1", decompose(Map("x" -> 1, "y" -> 2)), subType = Some("cool-sub-type-id"))
+            SerializableComponent(id = "1", TestIntermediateType(SubType(1, 2)), subType = Some("cool-sub-type-id"))
           ))
         ))
 

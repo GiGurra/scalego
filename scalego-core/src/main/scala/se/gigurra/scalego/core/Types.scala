@@ -5,5 +5,5 @@ package se.gigurra.scalego.core
   */
 trait Types {
   type EntityId
-  type ComponentTypeId
+  type SystemId
 }

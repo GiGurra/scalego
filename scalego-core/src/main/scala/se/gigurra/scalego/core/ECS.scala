@@ -5,7 +5,7 @@ import scala.language.implicitConversions
 /**
   * Created by johan on 2016-06-11.
   */
-class ECS[T_Types <: Types] private(val systems: Map[T_Types#ComponentTypeId, System[_, T_Types]]) {
+class ECS[T_Types <: Types] private(val systems: Map[T_Types#SystemId, System[_, T_Types]]) {
 
   def system[T](implicit typeInfo: ComponentTypeInfo[T, T_Types]): System[T, T_Types] = {
     val typ = implicitly[ComponentTypeInfo[T, T_Types]]

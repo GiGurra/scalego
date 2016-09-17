@@ -13,12 +13,12 @@ class ECSSpec
   with OneInstancePerTest {
 
   class StringBasedIdTypes extends Types {
-    override type ComponentTypeId = String
+    override type SystemId = String
     override type EntityId = String
   }
 
   class LongBasedIdTypes extends Types {
-    override type ComponentTypeId = Long
+    override type SystemId = Long
     override type EntityId = Long
   }
 

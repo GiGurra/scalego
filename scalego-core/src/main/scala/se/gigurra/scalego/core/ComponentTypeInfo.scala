@@ -6,7 +6,7 @@ import scala.reflect.ClassTag
 /**
   * Created by johan on 2016-06-26.
   */
-case class ComponentTypeInfo[ComponentType: ClassTag, T_Types <: Types](id: T_Types#ComponentTypeId) {
+case class ComponentTypeInfo[ComponentType: ClassTag, T_Types <: Types](id: T_Types#SystemId) {
   def classTag: ClassTag[ComponentType] = implicitly[ClassTag[ComponentType]]
 }
 

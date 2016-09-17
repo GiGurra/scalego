@@ -7,13 +7,17 @@ import se.gigurra.scalego.core.{ECS, Entity, System}
 import scala.collection.mutable
 import scala.language.postfixOps
 import ECSSerializerSpec._
-import org.json4s.Extraction._
 
 class ECSSerializerSpec_write
   extends WordSpec
   with MockitoSugar
   with Matchers
   with OneInstancePerTest {
+
+  object StringTestMapper extends TestMapper[StringBasedIdTypes] {
+    override def intermediary2CompId(id: String): String = id
+    override def intermediary2entityId(id: String): String = id
+  }
 
   "ECSSerializer:write" should {
 
@@ -27,9 +31,9 @@ class ECSSerializerSpec_write
       Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
       Entity.Builder + Position(5, 6) + Velocity(7, 8) build(entityId = "2")
 
-      implicit val formats = SerializationFormats.empty
+      implicit val formats = KnownSubtypes.empty
 
-      val serializer = ECSSerializer(JsonTestMapper)
+      val serializer = ECSSerializer(StringTestMapper)
       import serializer._
 
       val result = ecs.toSerializable
@@ -37,12 +41,12 @@ class ECSSerializerSpec_write
       result shouldBe
         SerializableEcs(List(
           SerializableSystem(systemId = "position", List(
-            SerializableComponent(id = "2", decompose(Map("x" -> 5, "y" -> 6)), subType = None),
-            SerializableComponent(id = "1", decompose(Map("x" -> 1, "y" -> 2)), subType = None)
+            SerializableComponent(id = "2", TestIntermediateType(Position(5, 6)), subType = None),
+            SerializableComponent(id = "1", TestIntermediateType(Position(1, 2)), subType = None)
           )),
           SerializableSystem(systemId = "velocity", List(
-            SerializableComponent(id = "2", decompose(Map("x" -> 7, "y" -> 8)), subType = None),
-            SerializableComponent(id = "1", decompose(Map("x" -> 3, "y" -> 4)), subType = None)
+            SerializableComponent(id = "2", TestIntermediateType(Velocity(7, 8)), subType = None),
+            SerializableComponent(id = "1", TestIntermediateType(Velocity(3, 4)), subType = None)
           ))
         ))
 
@@ -52,7 +56,7 @@ class ECSSerializerSpec_write
 
       implicit val baseSystem = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
 
-      val serializer = ECSSerializer(JsonTestMapper)
+      val serializer = ECSSerializer(StringTestMapper)
       import serializer._
       val ecs = ECS(baseSystem)
 
@@ -65,7 +69,7 @@ class ECSSerializerSpec_write
 
       implicit val baseSystem = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
 
-      val serializer = ECSSerializer(JsonTestMapper, SerializationFormats("cool-sub-type-id" -> classOf[SubType]))
+      val serializer = ECSSerializer(StringTestMapper, KnownSubtypes("cool-sub-type-id" -> classOf[SubType]))
       import serializer._
       val ecs = ECS(baseSystem)
 
@@ -74,7 +78,7 @@ class ECSSerializerSpec_write
       ecs.toSerializable shouldBe
         SerializableEcs(List(
           SerializableSystem(systemId = "base-type", Seq(
-            SerializableComponent(id = "1", decompose(Map("x" -> 1, "y" -> 2)), subType = Some("cool-sub-type-id"))
+            SerializableComponent(id = "1", TestIntermediateType(SubType(1, 2)), subType = Some("cool-sub-type-id"))
           ))
         ))
     }

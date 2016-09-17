@@ -1,16 +1,12 @@
 package se.gigurra.scalego.serialization
 
-import org.json4s.{DefaultFormats}
-import org.json4s.Extraction._
-import org.json4s.JsonAST.JValue
-import org.json4s.jackson.JsonMethods
 import se.gigurra.scalego.core.Types
 
 /**
   * Created by johan on 2016-09-17.
   */
 
-object ECSSerializerSpec extends JsonMethods {
+object ECSSerializerSpec {
 
   trait BaseType
   case class SubType(x: Int, y: Int) extends BaseType
@@ -19,24 +15,23 @@ object ECSSerializerSpec extends JsonMethods {
   case class Velocity(x: Int, y: Int)
 
   class StringBasedIdTypes extends Types {
-    override type ComponentTypeId = String
+    override type SystemId = String
     override type EntityId = String
   }
 
   class LongBasedIdTypes extends Types {
-    override type ComponentTypeId = Long
+    override type SystemId = Long
     override type EntityId = Long
   }
 
-  implicit val jsonFormats = DefaultFormats
-  object JsonTestMapper extends Mapper[JValue] (
-    obj2intermediary = { obj =>
-      decompose(obj)
-    },
-    intermediary2Obj = { (jVal: JValue, cls: Class[_]) =>
-      extract[Any](jVal)(jsonFormats, Manifest.classType(cls))
-    }
-  )
-
+  case class TestIntermediateType(obj: Any)
+  abstract class TestMapper[T_Types <: Types]() extends Mapper[TestIntermediateType, T_Types] {
+    def obj2intermediary(obj: Any): TestIntermediateType = TestIntermediateType(obj)
+    def intermediary2Obj(intermediary: TestIntermediateType, cls: Class[_]): Any = intermediary.obj
+    override def compId2Intermediary(id: T_Types#SystemId): String = id.toString
+    override def entityId2Intermediary(id: T_Types#EntityId): String = id.toString
+    override def intermediary2CompId(id: String): T_Types#SystemId
+    override def intermediary2entityId(id: String): T_Types#EntityId
+  }
 }
 
