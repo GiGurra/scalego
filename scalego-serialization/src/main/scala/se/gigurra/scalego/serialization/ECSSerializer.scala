@@ -27,7 +27,7 @@ case class ECSSerializer[IntermediaryFormat, T_Types <: Types](mapper: Mapper[In
 
   implicit class SerializableSystemOpsWrite[ComponentType: ClassTag](system: System[ComponentType, T_Types]) {
     def toSerializable: SerializableSystem[IntermediaryFormat] = {
-      SerializableSystem(compId2Intermediary(system.typeInfo.id), system.map{case (k,v) => serializeComponent(k, v, system.typeInfo)}.toSeq)
+      SerializableSystem(systemId2Intermediary(system.typeInfo.id), system.map{case (k,v) => serializeComponent(k, v, system.typeInfo)}.toSeq)
     }
 
     private def serializeComponent(id: T_Types#EntityId, component: Any, expectedType: ComponentTypeInfo[_, _]): SerializableComponent[IntermediaryFormat] = {
@@ -47,7 +47,7 @@ case class ECSSerializer[IntermediaryFormat, T_Types <: Types](mapper: Mapper[In
   implicit class SerializableECSOpsRead(ecs: ECS[T_Types]) {
     def append(serializedData: SerializableEcs[IntermediaryFormat]): Unit = {
       for (serializedSystem <- serializedData.systems) {
-        val system = ecs.systems.getOrElse(intermediary2CompId(serializedSystem.systemId), throw UnknownSystemForDeSerialization(serializedSystem.systemId))
+        val system = ecs.systems.getOrElse(intermediary2SystemId(serializedSystem.systemId), throw UnknownSystemForDeSerialization(serializedSystem.systemId))
         system.asInstanceOf[System[Any, T_Types]].append(serializedSystem.components)
       }
     }
@@ -57,7 +57,7 @@ case class ECSSerializer[IntermediaryFormat, T_Types <: Types](mapper: Mapper[In
     def append(serializedComponents: Seq[SerializableComponent[IntermediaryFormat]]): Unit = {
       val deserializedComponents = serializedComponents.map(_.id).zip(serializedComponents.map(deSerializeComponent(_, system.typeInfo)))
       for ((id, component) <- deserializedComponents) {
-        system.put(intermediary2entityId(id), component.asInstanceOf[Any])
+        system.put(intermediary2EntityId(id), component.asInstanceOf[Any])
       }
     }
 

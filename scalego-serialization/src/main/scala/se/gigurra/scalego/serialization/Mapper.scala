@@ -8,8 +8,8 @@ import se.gigurra.scalego.core.Types
 trait Mapper[IntermediaryFormat, T_Types <: Types] {
   def obj2intermediary(obj: Any): IntermediaryFormat
   def intermediary2Obj(obj: IntermediaryFormat, cls: Class[_]): Any
-  def compId2Intermediary(id: T_Types#SystemId): String
-  def intermediary2CompId(id: String): T_Types#SystemId
+  def systemId2Intermediary(id: T_Types#SystemId): String
+  def intermediary2SystemId(id: String): T_Types#SystemId
   def entityId2Intermediary(id: T_Types#EntityId): String
-  def intermediary2entityId(id: String): T_Types#EntityId
+  def intermediary2EntityId(id: String): T_Types#EntityId
 }

@@ -15,8 +15,8 @@ class ECSSerializerSpec_read
     with OneInstancePerTest {
 
     object StringTestMapper extends TestMapper[StringBasedIdTypes] {
-      override def intermediary2CompId(id: String): String = id
-      override def intermediary2entityId(id: String): String = id
+      override def intermediary2SystemId(id: String): String = id
+      override def intermediary2EntityId(id: String): String = id
     }
 
     "ECSSerializer:read" should {

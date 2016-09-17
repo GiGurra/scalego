@@ -13,8 +13,8 @@ import se.gigurra.scalego.core.Types
 abstract class JsonMapper[T_Types <: Types](val jsonFormats: Formats = DefaultFormats) extends Mapper[JValue, T_Types] {
   def obj2intermediary(obj: Any): JValue = decompose(obj)(jsonFormats)
   def intermediary2Obj(intermediary: JValue, cls: Class[_]): Any = extract[Any](intermediary)(jsonFormats, Manifest.classType(cls))
-  override def compId2Intermediary(id: T_Types#SystemId): String = id.toString
-  override def entityId2Intermediary(id: T_Types#EntityId): String = id.toString
-  override def intermediary2CompId(id: String): T_Types#SystemId
-  override def intermediary2entityId(id: String): T_Types#EntityId
+  override def systemId2Intermediary(id: T_Types#SystemId): String
+  override def entityId2Intermediary(id: T_Types#EntityId): String
+  override def intermediary2SystemId(id: String): T_Types#SystemId
+  override def intermediary2EntityId(id: String): T_Types#EntityId
 }

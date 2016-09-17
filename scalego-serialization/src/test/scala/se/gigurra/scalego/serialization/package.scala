@@ -27,9 +27,9 @@ package object serialization {
   abstract class TestMapper[T_Types <: Types]() extends Mapper[TestIntermediateType, T_Types] {
     def obj2intermediary(obj: Any): TestIntermediateType = TestIntermediateType(obj)
     def intermediary2Obj(intermediary: TestIntermediateType, cls: Class[_]): Any = intermediary.obj
-    override def compId2Intermediary(id: T_Types#SystemId): String = id.toString
+    override def systemId2Intermediary(id: T_Types#SystemId): String = id.toString
     override def entityId2Intermediary(id: T_Types#EntityId): String = id.toString
-    override def intermediary2CompId(id: String): T_Types#SystemId
-    override def intermediary2entityId(id: String): T_Types#EntityId
+    override def intermediary2SystemId(id: String): T_Types#SystemId
+    override def intermediary2EntityId(id: String): T_Types#EntityId
   }
 }
