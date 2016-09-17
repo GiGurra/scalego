@@ -9,7 +9,7 @@ Suppose you could have ..
 * The efficiency and composability of ECS 
 * The API of OOP
 * Type safe without the use of reflection
-* Without having to follow a base interface
+* Without having to inherit from a component base class/interface
 
 Try Scalego!
 
