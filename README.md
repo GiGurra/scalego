@@ -59,10 +59,8 @@ Here is some example code using scalego-serialization-json:
 
 ```scala
 
-// Continuing on the code from the previous example, we can add to/from json funcitonality to ECS
-
 val serializer = JsonSerializer[StringIds]()
-import serializer._
+import serializer._ // Adds a .toJson method to the ECS class
 
 val ugly = ecs.toJson(pretty = false)
 val pretty = ecs.toJson(pretty = true)
