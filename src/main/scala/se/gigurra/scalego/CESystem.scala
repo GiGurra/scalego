@@ -6,7 +6,7 @@ import scala.reflect.ClassTag
 
 class CESystem[ComponentType, T_Types <: Types](val typeInfo: ComponentTypeInfo[ComponentType, T_Types])(private val backingStorage: mutable.Map[T_Types#EntityId, ComponentType]) {
 
-  def process(time: T_Types#ProcessTime, context: T_Types#ProcessContext): Unit = {}
+  def process(input: T_Types#ProcessInput): Unit = {}
 
   override def equals(other: Any): Boolean = {
     other match {

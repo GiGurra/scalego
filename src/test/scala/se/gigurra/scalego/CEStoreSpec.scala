@@ -15,15 +15,13 @@ class CEStoreSpec
   class StringBasedIdTypes extends Types {
     override type ComponentTypeId = String
     override type EntityId = String
-    override type ProcessTime = Long
-    override type ProcessContext = CEStore[StringBasedIdTypes]
+    override type ProcessInput = Long
   }
 
   class LongBasedIdTypes extends Types {
     override type ComponentTypeId = Long
     override type EntityId = Long
-    override type ProcessTime = Long
-    override type ProcessContext = CEStore[LongBasedIdTypes]
+    override type ProcessInput = Long
   }
 
   "CEStore" should {
