@@ -74,7 +74,7 @@ e2.get[Velocity] shouldBe Some(Velocity(7,8))
 Have a look at 
 
 * scalego-serialization : A plug-in serialization API for scalego ECS 
-* scalego-serialization-json : A first use/implementantation of scalego-serialization
+* scalego-serialization-json : Implementantation of scalego-serialization using json4s
 
 All extensions are built separately on top of scalego-core without intrusive code. 
 
