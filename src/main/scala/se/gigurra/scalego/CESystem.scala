@@ -2,8 +2,10 @@ package se.gigurra.scalego
 
 import scala.collection.mutable
 import scala.language.implicitConversions
+import scala.reflect.ClassTag
 
-class CESystem[ComponentType, T_Types <: Types](val typeInfo: ComponentTypeInfo[ComponentType, T_Types]) extends mutable.HashMap[T_Types#EntityId, ComponentType] {
+class CESystem[ComponentType, T_Types <: Types](val typeInfo: ComponentTypeInfo[ComponentType, T_Types])(private val backingStorage: mutable.Map[T_Types#EntityId, ComponentType]) {
+
   def process(time: T_Types#ProcessTime, context: T_Types#ProcessContext): Unit = {}
 
   override def equals(other: Any): Boolean = {
@@ -11,5 +13,11 @@ class CESystem[ComponentType, T_Types <: Types](val typeInfo: ComponentTypeInfo[
       case other: CESystem[_, _] => typeInfo == other.typeInfo && super.equals(other)
       case _ => false
     }
+  }
+}
+
+object CESystem {
+  implicit def system2map[ComponentType, T_Types <: Types](system: CESystem[ComponentType, T_Types]): mutable.Map[T_Types#EntityId, ComponentType] = {
+    system.backingStorage
   }
 }

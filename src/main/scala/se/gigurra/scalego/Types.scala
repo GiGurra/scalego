@@ -1,5 +1,7 @@
 package se.gigurra.scalego
 
+import scala.collection.mutable
+
 /**
   * Created by johan on 2016-09-17.
   */

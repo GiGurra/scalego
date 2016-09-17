@@ -2,6 +2,7 @@ package se.gigurra.scalego
 
 import scala.collection.mutable
 import scala.language.implicitConversions
+import scala.language.existentials
 import scala.reflect.ClassTag
 
 /**
