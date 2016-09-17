@@ -17,9 +17,9 @@ Try Scalego!
 
 import se.gigurra.scalego.core._
 
-class StringIds extends IdTypes {
-  override type SystemId = String
-  override type EntityId = String
+type StringIds = IdTypes {
+  type SystemId = String
+  type EntityId = String
 }
 
 case class Position(x: Int, y: Int)
