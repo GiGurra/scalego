@@ -17,7 +17,7 @@ Try Scalego!
 
 import se.gigurra.scalego.core._
 
-class StringBasedIdTypes extends IdTypes {
+class StringIds extends IdTypes {
   override type SystemId = String
   override type EntityId = String
 }
@@ -25,8 +25,8 @@ class StringBasedIdTypes extends IdTypes {
 case class Position(x: Int, y: Int)
 case class Velocity(x: Int, y: Int)
 
-implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
-implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())
+implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
+implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
 
 val ecs = ECS(positionSystem, velocitySystem)
 
