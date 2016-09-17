@@ -11,27 +11,27 @@ import scala.reflect.ClassTag
   * Created by johan on 2016-06-12.
   */
 case class Entity[T_Types <: Types](id: T_Types#EntityId) {
-  def +=[ComponentType](component: ComponentType)(implicit system: CESystem[ComponentType, T_Types]): Entity[T_Types] = {
+  def +=[ComponentType](component: ComponentType)(implicit system: System[ComponentType, T_Types]): Entity[T_Types] = {
     system.put(this.id, component)
     this
   }
-  def get[ComponentType](implicit system: CESystem[ComponentType, T_Types]): Option[ComponentType] = system.get(this.id)
-  def apply[ComponentType : ClassTag](implicit system: CESystem[ComponentType, T_Types]): ComponentType = system.getOrElse(this.id, throw HasNoSuchComponent(id, implicitly[ClassTag[ComponentType]].runtimeClass))
-  def component[ComponentType : ClassTag](implicit system: CESystem[ComponentType, T_Types]): ComponentType = apply[ComponentType]
-  def getComponent[ComponentType](implicit system: CESystem[ComponentType, T_Types]): Option[ComponentType] = get[ComponentType]
-  def info(implicit store: CEStore[T_Types]): String = s"Entity-$id { ${store.componentsOf(this).mkString(", ")} }"
+  def get[ComponentType](implicit system: System[ComponentType, T_Types]): Option[ComponentType] = system.get(this.id)
+  def apply[ComponentType : ClassTag](implicit system: System[ComponentType, T_Types]): ComponentType = system.getOrElse(this.id, throw HasNoSuchComponent(id, implicitly[ClassTag[ComponentType]].runtimeClass))
+  def component[ComponentType : ClassTag](implicit system: System[ComponentType, T_Types]): ComponentType = apply[ComponentType]
+  def getComponent[ComponentType](implicit system: System[ComponentType, T_Types]): Option[ComponentType] = get[ComponentType]
+  def info(implicit store: ECS[T_Types]): String = s"Entity-$id { ${store.componentsOf(this).mkString(", ")} }"
 }
 
 object Entity {
 
   object Builder {
-    def +[ComponentType, T_Types <: Types](component: ComponentType)(implicit system: CESystem[ComponentType, T_Types]): EntityBuilder[T_Types] = {
+    def +[ComponentType, T_Types <: Types](component: ComponentType)(implicit system: System[ComponentType, T_Types]): EntityBuilder[T_Types] = {
       EntityBuilder[T_Types](Seq(UnAddedComponent(component, system)))
     }
   }
 
   case class EntityBuilder[T_Types <: Types](components: Seq[UnAddedComponent[_, T_Types]] = new mutable.ArrayBuffer[UnAddedComponent[_, T_Types]]) {
-    def +[ComponentType](component: ComponentType)(implicit system: CESystem[ComponentType, T_Types]): EntityBuilder[T_Types] = {
+    def +[ComponentType](component: ComponentType)(implicit system: System[ComponentType, T_Types]): EntityBuilder[T_Types] = {
       EntityBuilder(components :+ UnAddedComponent(component, system))
     }
     def build(entityId: T_Types#EntityId): Entity[T_Types] = {
@@ -43,7 +43,7 @@ object Entity {
   case class HasNoSuchComponent(entityId: Any, componentType: Class[_])
     extends NoSuchElementException(s"Entity $entityId has no stored component of type ${componentType.getSimpleName}")
 
-  case class UnAddedComponent[ComponentType, T_Types <: Types](component: ComponentType, system: CESystem[ComponentType, T_Types]){
+  case class UnAddedComponent[ComponentType, T_Types <: Types](component: ComponentType, system: System[ComponentType, T_Types]){
     def addTo(entityId: T_Types#EntityId): Unit = {
       system.put(entityId, component)
     }

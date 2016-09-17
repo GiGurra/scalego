@@ -7,5 +7,5 @@ import scala.language.implicitConversions
 case class ComponentTypeInfo[ComponentType, T_Types <: Types](id: T_Types#ComponentTypeId)
 
 object ComponentTypeInfo {
-  implicit def system2ComponentTypeInfo[ComponentType, T_Types <: Types](implicit system: CESystem[ComponentType, T_Types]): ComponentTypeInfo[ComponentType, T_Types] = system.typeInfo
+  implicit def system2ComponentTypeInfo[ComponentType, T_Types <: Types](implicit system: System[ComponentType, T_Types]): ComponentTypeInfo[ComponentType, T_Types] = system.typeInfo
 }
