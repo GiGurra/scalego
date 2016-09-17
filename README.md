@@ -4,13 +4,13 @@
 
 An Entity Component System implementation in Scala
 
-Suppose you could have ..
+Goals:
 
 * The efficiency and composability of ECS 
 * The API of OOP
 * Without macros or reflection
 
-Try Scalego!
+Example use:
 
 ```scala
 
