@@ -90,10 +90,8 @@ val pretty = ecs.toJson(pretty = true)
 
 ugly shouldBe "{\"systems\":[{\"systemId\":\"position\",\"components\":[{\"id\":\"2\",\"data\":{\"x\":5,\"y\":6}},{\"id\":\"1\",\"data\":{\"x\":1,\"y\":2}}]},{\"systemId\":\"velocity\",\"components\":[{\"id\":\"2\",\"data\":{\"x\":7,\"y\":8}},{\"id\":\"1\",\"data\":{\"x\":3,\"y\":4}}]}]}"
 
-////////////////////////////////////////////////////////////////////
-// Or the opposite case, perhaps reading a game world from a file,
-// or perhaps game world changes sent over the network.
 
+// Or the opposite case, perhaps reading a game world from a file or sent over the network.
 val ecs = ECS(..,..,..)
 ecs.appendJson(json: String)
 
