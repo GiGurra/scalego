@@ -6,5 +6,4 @@ package se.gigurra.scalego
 trait Types {
   type EntityId
   type ComponentTypeId
-  type ProcessInput
 }
