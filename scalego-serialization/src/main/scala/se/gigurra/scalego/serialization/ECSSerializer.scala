@@ -12,23 +12,23 @@ import scala.reflect.ClassTag
 
 case class Mapper[IntermediaryFormat](obj2intermediary: Any => IntermediaryFormat, intermediary2Obj: (IntermediaryFormat, Class[_]) => Any)
 
-case class ECSSerializer[IntermediaryFormat](mapper: Mapper[IntermediaryFormat]) {
+case class ECSSerializer[IntermediaryFormat](mapper: Mapper[IntermediaryFormat], formats: SerializationFormats = SerializationFormats.empty) {
 
   /////////////////////////////
   // Writing
 
   implicit class SerializableECSOpsWrite[T_Types <: Types](ecs: ECS[T_Types]) {
-    def toSerializable(implicit formats: SerializationFormats): SerializableEcs[IntermediaryFormat] = {
+    def toSerializable: SerializableEcs[IntermediaryFormat] = {
       SerializableEcs[IntermediaryFormat](ecs.systems.values.map { _.toSerializable }.toSeq)
     }
   }
 
   implicit class SerializableSystemOpsWrite[ComponentType: ClassTag, T_Types <: Types](system: System[ComponentType, T_Types]) {
-    def toSerializable(implicit formats: SerializationFormats): SerializableSystem[IntermediaryFormat] = {
+    def toSerializable: SerializableSystem[IntermediaryFormat] = {
       SerializableSystem(system.typeInfo.id, system.map{case (k,v) => serializeComponent(k, v, system.typeInfo)}.toSeq)
     }
 
-    private def serializeComponent(id: Any, component: Any, expectedType: ComponentTypeInfo[_, _])(implicit formats: SerializationFormats): SerializableComponent[IntermediaryFormat] = {
+    private def serializeComponent(id: Any, component: Any, expectedType: ComponentTypeInfo[_, _]): SerializableComponent[IntermediaryFormat] = {
       val typeId = if (component.getClass == expectedType.classTag.runtimeClass) {
         None
       } else {
@@ -43,23 +43,23 @@ case class ECSSerializer[IntermediaryFormat](mapper: Mapper[IntermediaryFormat])
   // Reading
 
   implicit class SerializableECSOpsRead[T_Types <: Types](ecs: ECS[T_Types]) {
-    def append(serializedData: SerializableEcs[IntermediaryFormat])(implicit formats: SerializationFormats): Unit = {
+    def append(serializedData: SerializableEcs[IntermediaryFormat]): Unit = {
       for (serializedSystem <- serializedData.systems) {
-        val system = ecs.systems.getOrElse(serializedSystem.systemId.asInstanceOf[T_Types#ComponentTypeId], throw UnknownSystemForSerialization(serializedSystem.systemId))
+        val system = ecs.systems.getOrElse(serializedSystem.systemId.asInstanceOf[T_Types#ComponentTypeId], throw UnknownSystemForDeSerialization(serializedSystem.systemId))
         system.asInstanceOf[System[Any, T_Types]].append(serializedSystem.components)
       }
     }
   }
 
   implicit class SerializableSystemOpsRead[T_Types <: Types](system: System[Any, T_Types]) {
-    def append(serializedComponents: Seq[SerializableComponent[IntermediaryFormat]])(implicit formats: SerializationFormats): Unit = {
+    def append(serializedComponents: Seq[SerializableComponent[IntermediaryFormat]]): Unit = {
       val deserializedComponents = serializedComponents.map(_.id).zip(serializedComponents.map(deSerializeComponent(_, system.typeInfo)))
       for ((id, component) <- deserializedComponents) {
         system.put(id.asInstanceOf[T_Types#EntityId], component.asInstanceOf[Any])
       }
     }
 
-    private def deSerializeComponent(component: SerializableComponent[IntermediaryFormat], expectedType: ComponentTypeInfo[_, _])(implicit formats: SerializationFormats): Any = {
+    private def deSerializeComponent(component: SerializableComponent[IntermediaryFormat], expectedType: ComponentTypeInfo[_, _]): Any = {
       val cls = component.subType match {
         case None =>
           expectedType.classTag.runtimeClass
@@ -94,8 +94,10 @@ object SerializationFormats {
   val empty: SerializationFormats = apply()
 }
 
-case class UnknownSubTypeForSerialization(baseType: Class[_], subType: Any, op: String)
-  extends RuntimeException(s"Failed to $op unregistered/unknown type ($subType). Expected type $baseType or any of it's known subtypes")
+class SerializationException(msg: String) extends RuntimeException(msg)
 
-case class UnknownSystemForSerialization(systemId: Any)
-  extends RuntimeException(s"Failed deserialize components for system '$systemId' - No such system is created locally!")
+case class UnknownSubTypeForSerialization(baseType: Class[_], subType: Any, op: String)
+  extends SerializationException(s"Failed to $op unregistered/unknown type ($subType). Expected type $baseType or any of it's known subtypes")
+
+case class UnknownSystemForDeSerialization(systemId: Any)
+  extends SerializationException(s"Failed deserialize components for system '$systemId' - No such system is created locally!")

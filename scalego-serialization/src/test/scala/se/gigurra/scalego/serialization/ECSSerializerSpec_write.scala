@@ -6,16 +6,16 @@ import se.gigurra.scalego.core.{ECS, Entity, System}
 
 import scala.collection.mutable
 import scala.language.postfixOps
-import SerializationSpec._
+import ECSSerializerSpec._
 import org.json4s.Extraction._
 
-class SerializationSpec_write
+class ECSSerializerSpec_write
   extends WordSpec
   with MockitoSugar
   with Matchers
   with OneInstancePerTest {
 
-  "Serialization" should {
+  "ECSSerializer:write" should {
 
     "Create a serializable representation of an ECS" in {
 
@@ -58,7 +58,6 @@ class SerializationSpec_write
 
       Entity.Builder + SubType(1, 2) build(entityId = "1")
 
-      implicit val formats = SerializationFormats.empty
       a[UnknownSubTypeForSerialization] should be thrownBy ecs.toSerializable
     }
 
@@ -66,13 +65,11 @@ class SerializationSpec_write
 
       implicit val baseSystem = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
 
-      val serializer = ECSSerializer(JsonTestMapper)
+      val serializer = ECSSerializer(JsonTestMapper, SerializationFormats("cool-sub-type-id" -> classOf[SubType]))
       import serializer._
       val ecs = ECS(baseSystem)
 
       Entity.Builder + SubType(1, 2) build(entityId = "1")
-
-      implicit val formats = SerializationFormats.empty + ("cool-sub-type-id" -> classOf[SubType])
 
       ecs.toSerializable shouldBe
         SerializableEcs(List(

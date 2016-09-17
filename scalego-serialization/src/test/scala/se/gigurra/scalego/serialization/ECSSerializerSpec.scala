@@ -1,18 +1,16 @@
 package se.gigurra.scalego.serialization
 
-import org.json4s.{DefaultFormats, Extraction, Formats}
+import org.json4s.{DefaultFormats}
 import org.json4s.Extraction._
 import org.json4s.JsonAST.JValue
 import org.json4s.jackson.JsonMethods
 import se.gigurra.scalego.core.Types
-import org.json4s.jackson.JsonMethods.{compact, parse}
-import org.json4s.jackson.JsonMethods.{pretty => prty}
 
 /**
   * Created by johan on 2016-09-17.
   */
 
-object SerializationSpec extends JsonMethods {
+object ECSSerializerSpec extends JsonMethods {
 
   trait BaseType
   case class SubType(x: Int, y: Int) extends BaseType
