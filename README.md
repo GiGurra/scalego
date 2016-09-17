@@ -36,7 +36,7 @@ implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutabl
 val ecs = ECS(positionSystem, velocitySystem)
 
 // Add some entities. When you execute the .build(entityId) method the 
-// components get added to the relevant stores. The Entity class actually
+// components get added to the relevant systems. The Entity class actually
 // has no other fields than the entityId
 val e1 = Entity.Builder + Position(1, 2) + Velocity(0, 0) build(entityId = "1")
 val e2 = Entity.Builder + Position(0, 0) build(entityId = "2")
