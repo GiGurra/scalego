@@ -16,27 +16,41 @@ Try Scalego!
 
 import se.gigurra.scalego.core._
 
+// Decide what kind of types you want to use as entity and system Ids
 type StringIds = IdTypes {
   type SystemId = String
   type EntityId = String
 }
 
+// Define your component types
 case class Position(x: Int, y: Int)
 case class Velocity(x: Int, y: Int)
 
+// Create your systems - All component data is stored inside these systems. 
+// You can pick the backing storage type yourself, as long as you implement scala's mutable.Map trait. 
+// In these examples I will use scala regular mutable.HashMap
 implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
 implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
 
+// Create the ECS
 val ecs = ECS(positionSystem, velocitySystem)
 
+// Add some entities. When you execute the .build(entityId) method the 
+// components get added to the relevant stores. The entity type has no other
+// fields than the actual id
 val e1 = Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
 val e2 = Entity.Builder + Position(5, 6) + Velocity(7, 8) build(entityId = "2")
 
+// You can extract the component data either from the ECS ..
 ecs.system[Position].size shouldBe 2
 ecs.system[Velocity].size shouldBe 2
 ecs.containsEntity("1") shouldBe true
 ecs.containsEntity("2") shouldBe true
 
+// From the systems ..
+positionSystem("1") shouldBe Position(1, 2)
+
+// Or directly on the entities themselves - This is achieved by using the implicit System variables above
 e1[Position] shouldBe Position(1,2)
 e1[Velocity] shouldBe Velocity(3,4)
 e2[Position] shouldBe Position(5,6)
