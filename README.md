@@ -7,7 +7,7 @@ An Entity Component System implementation in Scala
 Suppose you could have ..
 
 * The efficiency and composability of ECS 
-* The API of an OOP hierarchy
+* The API of OOP
 * Type safe without the use of reflection
 * Create component types without having to follow a base interface
 
