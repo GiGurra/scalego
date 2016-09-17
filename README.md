@@ -82,6 +82,8 @@ Here is some example code using scalego-serialization-json:
 
 ```scala
 
+import se.gigurra.scalego.serialization.json.JsonSerializer
+
 val serializer = JsonSerializer[StringIds]()
 import serializer._ // Adds a .toJson method to the ECS class
 
