@@ -49,6 +49,7 @@ ecs.containsEntity("2") shouldBe true
 
 // From the systems ..
 positionSystem("1") shouldBe Position(1, 2)
+positionSystem.get("3") shouldBe None
 
 // Or directly on the entities themselves - This is achieved by using the implicit System variables above
 e1[Position] shouldBe Position(1,2)
