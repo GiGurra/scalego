@@ -19,7 +19,7 @@ object Serialization {
 
   implicit class SerializableSystemOps[ComponentType: ClassTag, T_Types <: Types](system: System[ComponentType, T_Types]) {
     def toSerializable(implicit formats: SerializationFormats): SerializableSystem = {
-      SerializableSystem(system.map{case (k,v) => serializeComponent(k, v, system.typeInfo)}.toSeq, system.typeInfo.id)
+      SerializableSystem(system.typeInfo.id, system.map{case (k,v) => serializeComponent(k, v, system.typeInfo)}.toSeq)
     }
 
     private def serializeComponent(id: Any, component: Any, expectedType: ComponentTypeInfo[_, _])(implicit formats: SerializationFormats): SerializedComponent = {
@@ -33,7 +33,7 @@ object Serialization {
   }
 
   case class SerializableEcs(data: Seq[SerializableSystem])
-  case class SerializableSystem(components: Seq[SerializedComponent], systemId: Any)
+  case class SerializableSystem(systemId: Any, components: Seq[SerializedComponent])
   case class SerializedComponent(id: Any, data: Any, subType: Option[String])
 }
 

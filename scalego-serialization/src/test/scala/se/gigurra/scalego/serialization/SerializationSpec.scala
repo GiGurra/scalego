@@ -35,14 +35,14 @@ class SerializationSpec
 
       result shouldBe
         SerializableEcs(List(
-          SerializableSystem(List(
+          SerializableSystem(systemId = "position", List(
             SerializedComponent(id = "2", Position(5, 6), subType = None),
             SerializedComponent(id = "1", Position(1, 2), subType = None)
-          ), "position"),
-          SerializableSystem(List(
+          )),
+          SerializableSystem(systemId = "velocity", List(
             SerializedComponent(id = "2", Velocity(7, 8), subType = None),
             SerializedComponent(id = "1", Velocity(3, 4), subType = None)
-          ), "velocity")
+          ))
         ))
 
     }
@@ -59,8 +59,28 @@ class SerializationSpec
       Entity.Builder + SubType(1, 2) build(entityId = "1")
 
       implicit val formats = SerializationFormats.empty
-
       a[UnknownSubTypeForSerialization] should be thrownBy ecs.toSerializable
+    }
+
+    "Serializable representation of an ECS if systems contain registered/known subtypes" in {
+
+      trait BaseType
+      case class SubType(x: Int, y: Int) extends BaseType
+
+      implicit val baseSystem = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
+
+      val ecs = ECS(baseSystem)
+
+      Entity.Builder + SubType(1, 2) build(entityId = "1")
+
+      implicit val formats = SerializationFormats.empty + ("cool-sub-type-id" -> classOf[SubType])
+
+      ecs.toSerializable shouldBe
+        SerializableEcs(List(
+          SerializableSystem(systemId = "base-type", Seq(
+            SerializedComponent(id = "1", SubType(1,2), subType = Some("cool-sub-type-id"))
+          ))
+        ))
     }
 
   }
@@ -77,5 +97,4 @@ object SerializationSpec {
     override type ComponentTypeId = Long
     override type EntityId = Long
   }
-
 }
