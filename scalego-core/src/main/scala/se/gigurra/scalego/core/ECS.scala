@@ -8,8 +8,7 @@ import scala.language.implicitConversions
 class ECS[T_Types <: Types] private(val systems: Map[T_Types#SystemId, System[_, T_Types]]) {
 
   def system[T](implicit typeInfo: ComponentTypeInfo[T, T_Types]): System[T, T_Types] = {
-    val typ = implicitly[ComponentTypeInfo[T, T_Types]]
-    systems.getOrElse(typ.id, throw new RuntimeException(s"No system of type $typ in $this")).asInstanceOf[System[T, T_Types]]
+    systems.getOrElse(typeInfo.id, throw new RuntimeException(s"No system of type ${typeInfo.id} in $this")).asInstanceOf[System[T, T_Types]]
   }
 
   def -=(entity: T_Types#EntityId): Unit = {
@@ -34,6 +33,17 @@ class ECS[T_Types <: Types] private(val systems: Map[T_Types#SystemId, System[_,
 
   def isEmpty: Boolean = {
     systems.values.forall(_.isEmpty)
+  }
+
+  override def hashCode(): Int = {
+    systems.hashCode()
+  }
+
+  override def equals(other: Any): Boolean = {
+    other match {
+      case other : ECS[_] => systems == other.systems
+      case _ => false
+    }
   }
 
 }

@@ -9,9 +9,16 @@ class System[ComponentType : ClassTag, T_Types <: Types](val typeInfo: Component
 
   def this(systemId: T_Types#SystemId, backingStorage: mutable.Map[T_Types#EntityId, ComponentType]) = this(new ComponentTypeInfo[ComponentType, T_Types](systemId))(backingStorage)
 
+  override def hashCode(): Int = {
+    typeInfo.hashCode() + backingStorage.hashCode()
+  }
+
   override def equals(other: Any): Boolean = {
     other match {
-      case other: System[_, _] => typeInfo == other.typeInfo && backingStorage == other.backingStorage
+      case other: System[_, _] =>
+        getClass == other.getClass &&
+          typeInfo == other.typeInfo &&
+          backingStorage == other.backingStorage
       case _ => false
     }
   }
