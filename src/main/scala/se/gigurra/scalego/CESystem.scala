@@ -4,7 +4,8 @@ import scala.collection.mutable
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
-class CESystem[ComponentType, T_Types <: Types](val typeInfo: ComponentTypeInfo[ComponentType, T_Types])(private val backingStorage: mutable.Map[T_Types#EntityId, ComponentType]) {
+class CESystem[ComponentType, T_Types <: Types](val typeInfo: ComponentTypeInfo[ComponentType, T_Types])
+                                               (private val backingStorage: mutable.Map[T_Types#EntityId, ComponentType]) {
 
   def process(input: T_Types#ProcessInput): Unit = {}
 
