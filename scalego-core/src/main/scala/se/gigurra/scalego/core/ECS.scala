@@ -27,6 +27,15 @@ class ECS[T_Types <: Types] private(val systems: Map[T_Types#ComponentTypeId, Sy
   def clear(): Unit = {
     systems.values.foreach(_.clear())
   }
+
+  def nonEmpty: Boolean = {
+    systems.values.exists(_.nonEmpty)
+  }
+
+  def isEmpty: Boolean = {
+    systems.values.forall(_.isEmpty)
+  }
+
 }
 
 object ECS {

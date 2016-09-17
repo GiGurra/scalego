@@ -66,6 +66,22 @@ class ECSSpec
       e2[Velocity] shouldBe Velocity(7,8)
     }
 
+    "Have isEmpty and nonEmpty methods" in {
+      implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
+      implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())
+
+      val ecs = ECS(positionSystem, velocitySystem)
+
+      ecs.nonEmpty shouldBe false
+      ecs.isEmpty shouldBe true
+
+      val e1 = Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
+      val e2 = Entity.Builder + Position(5, 6) + Velocity(7, 8) build(entityId = "2")
+
+      ecs.nonEmpty shouldBe true
+      ecs.isEmpty shouldBe false
+    }
+
     "Get components of an entity" in {
       implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
       implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())

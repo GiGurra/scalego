@@ -1,92 +1,24 @@
 package se.gigurra.scalego.serialization
 
-import org.scalatest.{Matchers, OneInstancePerTest, WordSpec}
-import org.scalatest.mock.MockitoSugar
-import se.gigurra.scalego.core.{ECS, Entity, System, Types}
+import org.json4s.{DefaultFormats, Extraction, Formats}
+import org.json4s.Extraction._
+import org.json4s.JsonAST.JValue
+import org.json4s.jackson.JsonMethods
+import se.gigurra.scalego.core.Types
+import org.json4s.jackson.JsonMethods.{compact, parse}
+import org.json4s.jackson.JsonMethods.{pretty => prty}
 
-import scala.collection.mutable
-import scala.language.postfixOps
-import Serialization._
-import SerializationSpec._
+/**
+  * Created by johan on 2016-09-17.
+  */
 
-class SerializationSpec
-  extends WordSpec
-  with MockitoSugar
-  with Matchers
-  with OneInstancePerTest {
+object SerializationSpec extends JsonMethods {
 
-  "Serialization" should {
+  trait BaseType
+  case class SubType(x: Int, y: Int) extends BaseType
 
-    "Create a serializable representation of an ECS" in {
-      case class Position(x: Int, y: Int)
-      case class Velocity(x: Int, y: Int)
-
-      implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
-      implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())
-
-      val ecs = ECS(positionSystem, velocitySystem)
-
-      Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
-      Entity.Builder + Position(5, 6) + Velocity(7, 8) build(entityId = "2")
-
-      implicit val formats = SerializationFormats.empty
-
-      val result = ecs.toSerializable
-
-      result shouldBe
-        SerializableEcs(List(
-          SerializableSystem(systemId = "position", List(
-            SerializedComponent(id = "2", Position(5, 6), subType = None),
-            SerializedComponent(id = "1", Position(1, 2), subType = None)
-          )),
-          SerializableSystem(systemId = "velocity", List(
-            SerializedComponent(id = "2", Velocity(7, 8), subType = None),
-            SerializedComponent(id = "1", Velocity(3, 4), subType = None)
-          ))
-        ))
-
-    }
-
-    "Fail to a serializable representation of an ECS if systems contain unregistered/unknown subtypes" in {
-
-      trait BaseType
-      case class SubType(x: Int, y: Int) extends BaseType
-
-      implicit val baseSystem = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
-
-      val ecs = ECS(baseSystem)
-
-      Entity.Builder + SubType(1, 2) build(entityId = "1")
-
-      implicit val formats = SerializationFormats.empty
-      a[UnknownSubTypeForSerialization] should be thrownBy ecs.toSerializable
-    }
-
-    "Serializable representation of an ECS if systems contain registered/known subtypes" in {
-
-      trait BaseType
-      case class SubType(x: Int, y: Int) extends BaseType
-
-      implicit val baseSystem = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
-
-      val ecs = ECS(baseSystem)
-
-      Entity.Builder + SubType(1, 2) build(entityId = "1")
-
-      implicit val formats = SerializationFormats.empty + ("cool-sub-type-id" -> classOf[SubType])
-
-      ecs.toSerializable shouldBe
-        SerializableEcs(List(
-          SerializableSystem(systemId = "base-type", Seq(
-            SerializedComponent(id = "1", SubType(1,2), subType = Some("cool-sub-type-id"))
-          ))
-        ))
-    }
-
-  }
-}
-
-object SerializationSpec {
+  case class Position(x: Int, y: Int)
+  case class Velocity(x: Int, y: Int)
 
   class StringBasedIdTypes extends Types {
     override type ComponentTypeId = String
@@ -97,4 +29,16 @@ object SerializationSpec {
     override type ComponentTypeId = Long
     override type EntityId = Long
   }
+
+  implicit val jsonFormats = DefaultFormats
+  object JsonTestMapper extends Mapper[JValue] (
+    obj2intermediary = { obj =>
+      decompose(obj)
+    },
+    intermediary2Obj = { (jVal: JValue, cls: Class[_]) =>
+      extract[Any](jVal)(jsonFormats, Manifest.classType(cls))
+    }
+  )
+
 }
+
