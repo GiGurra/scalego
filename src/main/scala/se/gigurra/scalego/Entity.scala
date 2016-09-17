@@ -1,5 +1,7 @@
 package se.gigurra.scalego
 
+import se.gigurra.scalego.Entity.HasNoSuchComponent
+
 import scala.collection.mutable
 import scala.language.implicitConversions
 import scala.language.existentials
@@ -14,7 +16,7 @@ case class Entity[T_Types <: Types](id: T_Types#EntityId) {
     this
   }
   def get[ComponentType](implicit system: CESystem[ComponentType, T_Types]): Option[ComponentType] = system.get(this.id)
-  def apply[ComponentType : ClassTag](implicit system: CESystem[ComponentType, T_Types]): ComponentType = system.getOrElse(this.id, throw EntityHasNoSuchComponent(id, implicitly[ClassTag[ComponentType]].runtimeClass))
+  def apply[ComponentType : ClassTag](implicit system: CESystem[ComponentType, T_Types]): ComponentType = system.getOrElse(this.id, throw HasNoSuchComponent(id, implicitly[ClassTag[ComponentType]].runtimeClass))
   def component[ComponentType : ClassTag](implicit system: CESystem[ComponentType, T_Types]): ComponentType = apply[ComponentType]
   def getComponent[ComponentType](implicit system: CESystem[ComponentType, T_Types]): Option[ComponentType] = get[ComponentType]
 }
@@ -38,7 +40,7 @@ object Entity {
       system.put(entityId, component)
     }
   }
-}
 
-case class EntityHasNoSuchComponent(entityId: Any, componentType: Class[_])
-  extends NoSuchElementException(s"Entity $entityId has no stored component of type ${componentType.getSimpleName}")
+  case class HasNoSuchComponent(entityId: Any, componentType: Class[_])
+    extends NoSuchElementException(s"Entity $entityId has no stored component of type ${componentType.getSimpleName}")
+}

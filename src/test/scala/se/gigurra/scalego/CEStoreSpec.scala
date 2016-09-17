@@ -93,8 +93,8 @@ class CEStoreSpec
       store.containsEntity("1") shouldBe false
       store.containsEntity("2") shouldBe true
 
-      a[EntityHasNoSuchComponent] should be thrownBy e1[Position]
-      a[EntityHasNoSuchComponent] should be thrownBy e1[Velocity]
+      a[Entity.HasNoSuchComponent] should be thrownBy e1[Position]
+      a[Entity.HasNoSuchComponent] should be thrownBy e1[Velocity]
       e2[Position] shouldBe Position(5,6)
       e2[Velocity] shouldBe Velocity(7,8)
     }
@@ -120,8 +120,8 @@ class CEStoreSpec
       store.containsEntity(1) shouldBe false
       store.containsEntity(2) shouldBe true
 
-      a[EntityHasNoSuchComponent] should be thrownBy e1[Position]
-      a[EntityHasNoSuchComponent] should be thrownBy e1[Velocity]
+      a[Entity.HasNoSuchComponent] should be thrownBy e1[Position]
+      a[Entity.HasNoSuchComponent] should be thrownBy e1[Velocity]
       e2[Position] shouldBe Position(5,6)
       e2[Velocity] shouldBe Velocity(7,8)
 
