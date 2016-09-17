@@ -12,12 +12,12 @@ class ECSSpec
   with Matchers
   with OneInstancePerTest {
 
-  type StringBasedIdTypes = IdTypes {
+  type StringIds = IdTypes {
     type SystemId = String
     type EntityId = String
   }
 
-  type LongBasedIdTypes = IdTypes {
+  type LongIds = IdTypes {
     type SystemId = Long
     type EntityId = Long
   }
@@ -32,13 +32,13 @@ class ECSSpec
     }
 
     "Add a system" in {
-      val positionSystem = new System[(Int, Int), StringBasedIdTypes]("position", mutable.HashMap())
+      val positionSystem = new System[(Int, Int), StringIds]("position", mutable.HashMap())
       noException should be thrownBy ECS(positionSystem)
     }
 
     "Get the system of a component type" in {
-      implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
-      implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())
+      implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
+      implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
       val ecs = ECS(positionSystem, velocitySystem)
 
       ecs.system[Position] shouldBe positionSystem
@@ -47,8 +47,8 @@ class ECSSpec
     }
 
     "Create entities in the ecs" in {
-      implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
-      implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())
+      implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
+      implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
 
       val ecs = ECS(positionSystem, velocitySystem)
 
@@ -67,8 +67,8 @@ class ECSSpec
     }
 
     "Have isEmpty and nonEmpty methods" in {
-      implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
-      implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())
+      implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
+      implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
 
       val ecs = ECS(positionSystem, velocitySystem)
 
@@ -83,8 +83,8 @@ class ECSSpec
     }
 
     "Get components of an entity" in {
-      implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
-      implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())
+      implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
+      implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
 
       val ecs = ECS(positionSystem, velocitySystem)
 
@@ -96,8 +96,8 @@ class ECSSpec
     }
 
     "Produce a debug info string of an entity" in {
-      implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
-      implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())
+      implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
+      implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
       implicit val ecs = ECS(positionSystem, velocitySystem)
 
       val e = Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
@@ -105,8 +105,8 @@ class ECSSpec
     }
 
     "Delete entities from the entire ecs" in {
-      implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
-      implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())
+      implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
+      implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
 
       val ecs = ECS(positionSystem, velocitySystem)
 
@@ -127,8 +127,8 @@ class ECSSpec
     }
 
     "Support different types of entity and component type Ids" in {
-      implicit val positionSystem = new System[Position, LongBasedIdTypes](1, mutable.HashMap())
-      implicit val velocitySystem = new System[Velocity, LongBasedIdTypes](2, mutable.LongMap())
+      implicit val positionSystem = new System[Position, LongIds](1, mutable.HashMap())
+      implicit val velocitySystem = new System[Velocity, LongIds](2, mutable.LongMap())
 
       val ecs = ECS(positionSystem, velocitySystem)
 
