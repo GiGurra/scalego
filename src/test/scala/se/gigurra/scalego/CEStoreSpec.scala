@@ -39,10 +39,8 @@ class CEStoreSpec
     }
 
     "Get the system of a component type" in {
-      implicit val positionTypeInfo = ComponentTypeInfo[Position, StringBasedIdTypes]("position")
-      implicit val velocityTypeInfo = ComponentTypeInfo[Velocity, StringBasedIdTypes]("velocity")
-      val positionSystem = new CESystem(positionTypeInfo)(mutable.HashMap())
-      val velocitySystem = new CESystem(velocityTypeInfo)(mutable.HashMap())
+      implicit val positionSystem = new CESystem(ComponentTypeInfo[Position, StringBasedIdTypes]("position"))(mutable.HashMap())
+      implicit val velocitySystem = new CESystem(ComponentTypeInfo[Velocity, StringBasedIdTypes]("velocity"))(mutable.HashMap())
       val store = CEStore(positionSystem, velocitySystem)
 
       store.system[Position] shouldBe positionSystem
@@ -51,10 +49,8 @@ class CEStoreSpec
     }
 
     "Create entities in the store" in {
-      implicit val positionTypeInfo = ComponentTypeInfo[Position, StringBasedIdTypes]("position")
-      implicit val velocityTypeInfo = ComponentTypeInfo[Velocity, StringBasedIdTypes]("velocity")
-      implicit val positionSystem = new CESystem(positionTypeInfo)(mutable.HashMap())
-      implicit val velocitySystem = new CESystem(velocityTypeInfo)(mutable.HashMap())
+      implicit val positionSystem = new CESystem(ComponentTypeInfo[Position, StringBasedIdTypes]("position"))(mutable.HashMap())
+      implicit val velocitySystem = new CESystem(ComponentTypeInfo[Velocity, StringBasedIdTypes]("velocity"))(mutable.HashMap())
 
       val store = CEStore(positionSystem, velocitySystem)
 
@@ -73,10 +69,8 @@ class CEStoreSpec
     }
 
     "Get components of an entity" in {
-      implicit val positionTypeInfo = ComponentTypeInfo[Position, StringBasedIdTypes]("position")
-      implicit val velocityTypeInfo = ComponentTypeInfo[Velocity, StringBasedIdTypes]("velocity")
-      implicit val positionSystem = new CESystem(positionTypeInfo)(mutable.HashMap())
-      implicit val velocitySystem = new CESystem(velocityTypeInfo)(mutable.HashMap())
+      implicit val positionSystem = new CESystem(ComponentTypeInfo[Position, StringBasedIdTypes]("position"))(mutable.HashMap())
+      implicit val velocitySystem = new CESystem(ComponentTypeInfo[Velocity, StringBasedIdTypes]("velocity"))(mutable.HashMap())
 
       implicit val store = CEStore(positionSystem, velocitySystem)
 
@@ -88,10 +82,8 @@ class CEStoreSpec
     }
 
     "Produce a debug info string of an entity" in {
-      implicit val positionTypeInfo = ComponentTypeInfo[Position, StringBasedIdTypes]("position")
-      implicit val velocityTypeInfo = ComponentTypeInfo[Velocity, StringBasedIdTypes]("velocity")
-      implicit val positionSystem = new CESystem(positionTypeInfo)(mutable.HashMap())
-      implicit val velocitySystem = new CESystem(velocityTypeInfo)(mutable.HashMap())
+      implicit val positionSystem = new CESystem(ComponentTypeInfo[Position, StringBasedIdTypes]("position"))(mutable.HashMap())
+      implicit val velocitySystem = new CESystem(ComponentTypeInfo[Velocity, StringBasedIdTypes]("velocity"))(mutable.HashMap())
 
       implicit val store = CEStore(positionSystem, velocitySystem)
 
@@ -100,10 +92,8 @@ class CEStoreSpec
     }
 
     "Delete entities from the entire store" in {
-      implicit val positionTypeInfo = ComponentTypeInfo[Position, StringBasedIdTypes]("position")
-      implicit val velocityTypeInfo = ComponentTypeInfo[Velocity, StringBasedIdTypes]("velocity")
-      implicit val positionSystem = new CESystem(positionTypeInfo)(mutable.HashMap())
-      implicit val velocitySystem = new CESystem(velocityTypeInfo)(mutable.HashMap())
+      implicit val positionSystem = new CESystem(ComponentTypeInfo[Position, StringBasedIdTypes]("position"))(mutable.HashMap())
+      implicit val velocitySystem = new CESystem(ComponentTypeInfo[Velocity, StringBasedIdTypes]("velocity"))(mutable.HashMap())
 
       val store = CEStore(positionSystem, velocitySystem)
 
@@ -124,10 +114,8 @@ class CEStoreSpec
     }
 
     "Support different types of entity and component type Ids" in {
-      implicit val positionTypeInfo = ComponentTypeInfo[Position, LongBasedIdTypes](1)
-      implicit val velocityTypeInfo = ComponentTypeInfo[Velocity, LongBasedIdTypes](2)
-      implicit val positionSystem = new CESystem(positionTypeInfo)(mutable.HashMap())
-      implicit val velocitySystem = new CESystem(velocityTypeInfo)(mutable.LongMap())
+      implicit val positionSystem = new CESystem(ComponentTypeInfo[Position, LongBasedIdTypes](1))(mutable.HashMap())
+      implicit val velocitySystem = new CESystem(ComponentTypeInfo[Velocity, LongBasedIdTypes](2))(mutable.LongMap())
 
       val store = CEStore(positionSystem, velocitySystem)
 
