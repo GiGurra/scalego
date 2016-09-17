@@ -19,15 +19,6 @@ src_managed/
 project/boot/
 project/plugins/project/
 
-#generated code
-src_generated/
-data_generator/
-data_generated/
-
-#python
-*.pyc
-__pycache__
-
 # Scala-IDE specific
 .scala_dependencies
 .worksheet
@@ -47,13 +38,7 @@ temp/
 .idea
 .idea/
 
-# doit
-.doit.db*
-
 *.so
 *.dll
 *.jnilib
 natives/
-
-leavu3-debug-log.txt
-leavu3-log.txt
