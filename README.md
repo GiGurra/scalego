@@ -41,7 +41,7 @@ val ecs = ECS(positionSystem, velocitySystem)
 val e1 = Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
 val e2 = Entity.Builder + Position(5, 6) + Velocity(7, 8) build(entityId = "2")
 
-// You can extract the component data either from the ECS ..
+// You can extract the component data from the ECS ..
 ecs.system[Position].size shouldBe 2
 ecs.system[Velocity].size shouldBe 2
 ecs.containsEntity("1") shouldBe true
@@ -53,8 +53,11 @@ positionSystem("1") shouldBe Position(1, 2)
 // Or directly on the entities themselves - This is achieved by using the implicit System variables above
 e1[Position] shouldBe Position(1,2)
 e1[Velocity] shouldBe Velocity(3,4)
-e2[Position] shouldBe Position(5,6)
-e2[Velocity] shouldBe Velocity(7,8)
+e2.get[Position] shouldBe Some(Position(5,6))
+e2.get[Velocity] shouldBe Some(Velocity(7,8))
+
+// Systems can be treated as mutable.Map's
+// Entities can be through of as lenses to a set of Options
 
 
 ```
