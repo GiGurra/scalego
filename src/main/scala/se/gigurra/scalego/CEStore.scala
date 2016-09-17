@@ -19,6 +19,10 @@ class CEStore[T_Types <: Types] private(systems: Map[T_Types#ComponentTypeId, CE
   def containsEntity(entity: T_Types#EntityId): Boolean = {
     systems.values.exists(_.contains(entity))
   }
+
+  def componentsOf(entity: T_Types#EntityId): Seq[Any] = {
+    systems.values.flatMap(_.get(entity)).toSeq
+  }
 }
 
 object CEStore {

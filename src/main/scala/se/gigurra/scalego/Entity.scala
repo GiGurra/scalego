@@ -19,6 +19,7 @@ case class Entity[T_Types <: Types](id: T_Types#EntityId) {
   def apply[ComponentType : ClassTag](implicit system: CESystem[ComponentType, T_Types]): ComponentType = system.getOrElse(this.id, throw HasNoSuchComponent(id, implicitly[ClassTag[ComponentType]].runtimeClass))
   def component[ComponentType : ClassTag](implicit system: CESystem[ComponentType, T_Types]): ComponentType = apply[ComponentType]
   def getComponent[ComponentType](implicit system: CESystem[ComponentType, T_Types]): Option[ComponentType] = get[ComponentType]
+  def info(implicit store: CEStore[T_Types]): String = s"Entity-$id { ${store.componentsOf(this).mkString(", ")} }"
 }
 
 object Entity {
@@ -50,5 +51,7 @@ object Entity {
       system.remove(entityId)
     }
   }
+
+  implicit def entity2Id[T_Types <: Types](entity: Entity[T_Types]): T_Types#EntityId = entity.id
 
 }
