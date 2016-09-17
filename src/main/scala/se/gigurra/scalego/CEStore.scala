@@ -5,42 +5,28 @@ import scala.language.implicitConversions
 /**
   * Created by johan on 2016-06-11.
   */
-case class CEStore[ContextType](systems: Map[ComponentType.Id, CESystem[Component, ContextType]])  {
+class CEStore[T_Types <: Types] private(systems: Map[T_Types#ComponentTypeId, CESystem[_, T_Types]]) {
 
-  def system[T <: Component : ComponentType]: CESystem[T, ContextType] = {
-    val typ = implicitly[ComponentType[T]]
-    systems.getOrElse(typ.id, throw new RuntimeException(s"No system of type $typ in $this")).asInstanceOf[CESystem[T, ContextType]]
+  def system[T](implicit typeInfo: ComponentTypeInfo[T, T_Types]): CESystem[T, T_Types] = {
+    val typ = implicitly[ComponentTypeInfo[T, T_Types]]
+    systems.getOrElse(typ.id, throw new RuntimeException(s"No system of type $typ in $this")).asInstanceOf[CESystem[T, T_Types]]
   }
 
-  def -=(entity: Entity.Id): Unit = {
+  def -=(entity: T_Types#EntityId): Unit = {
     systems.values.foreach(_ -= entity)
   }
 
-  def componentsOf(entity: Entity.Id): Iterable[Component] = {
-    for {
-      system <- systems.values
-      component <- system.get(entity)
-    } yield {
-      component
-    }
-  }
-
-  def containsEntity(entity: Entity.Id): Boolean = {
+  def containsEntity(entity: T_Types#EntityId): Boolean = {
     systems.values.exists(_.contains(entity))
   }
 
 }
 
 object CEStore {
-
-  def newBuilder[ContextType]: Builder[ContextType] = Builder(Map.empty)
-
-  case class Builder[ContextType](systems: Map[ComponentType.Id, CESystem[Component, ContextType]]) {
-    def ++[T <: Component : ComponentType](system: CESystem[T, ContextType]): Builder[ContextType] = {
-      Builder(systems + (implicitly[ComponentType[T]].id -> system.asInstanceOf[CESystem[Component, ContextType]]))
+  case class Builder[T_Types <: Types](systems: Map[T_Types#ComponentTypeId, CESystem[_, T_Types]] = Map.empty[T_Types#ComponentTypeId, CESystem[_, T_Types]]) {
+    def +[T](system: CESystem[T, T_Types])(implicit typeInfo: ComponentTypeInfo[T, T_Types]): Builder[T_Types] = {
+      Builder(systems + (implicitly[ComponentTypeInfo[T, T_Types]].id -> system.asInstanceOf[CESystem[_, T_Types]]))
     }
-    def build: CEStore[ContextType] = CEStore(systems)
+    def build: CEStore[T_Types] = new CEStore(systems)
   }
-
-  implicit def store2map(store: CEStore[_]): scala.collection.Map[ComponentType.Id, CESystem[Component, _]] = store.systems
 }

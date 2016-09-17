@@ -5,33 +5,23 @@ import scala.language.implicitConversions
 /**
   * Created by johan on 2016-06-12.
   */
-case class Entity(id: Entity.Id) extends AnyVal {
-  def +=[T <: Component: ComponentType, ContextType](component: T)(implicit store: CEStore[ContextType], context: ContextType): Entity = {
-    store.system[T].put(this, component, context)
+case class Entity[T_Types <: Types](id: T_Types#EntityId) extends AnyVal {
+  def +=[ComponentType](component: ComponentType)(implicit typeInfo: ComponentTypeInfo[ComponentType, T_Types], store: CEStore[T_Types]): Entity[T_Types] = {
+    store.system[ComponentType].put(this.id, component)
     this
   }
-  def get[T <: Component: ComponentType](implicit system: CESystem[T, _]): Option[T] = system.get(this)
-  def apply[T <: Component: ComponentType](implicit system: CESystem[T, _]): T = system.apply(this)
-  def component[T <: Component: ComponentType](implicit system: CESystem[T, _]): T = apply[T]
-  def getComponent[T <: Component: ComponentType](implicit system: CESystem[T, _]): Option[T] = get[T]
-  def components(implicit store: CEStore[_]): Iterable[Component] = store.componentsOf(this)
+  def get[ComponentType](implicit typeInfo: ComponentTypeInfo[ComponentType, T_Types], system: CESystem[ComponentType, T_Types]): Option[ComponentType] = system.get(this.id)
+  def apply[ComponentType](implicit typeInfo: ComponentTypeInfo[ComponentType, T_Types], system: CESystem[ComponentType, T_Types]): ComponentType = system.apply(this.id)
+  def component[ComponentType](implicit typeInfo: ComponentTypeInfo[ComponentType, T_Types], system: CESystem[ComponentType, T_Types]): ComponentType = apply[ComponentType]
+  def getComponent[ComponentType](implicit typeInfo: ComponentTypeInfo[ComponentType, T_Types], system: CESystem[ComponentType, T_Types]): Option[ComponentType] = get[ComponentType]
 }
 
 object Entity {
-  type Id = String
-
-  def builder[ContextType](id: Entity.Id)(implicit store: CEStore[ContextType], context: ContextType): Builder[ContextType] =
-    new Builder[ContextType](Entity(id))(store, context)
-
-  case class Builder[ContextType](entity: Entity)(implicit store: CEStore[ContextType], context: ContextType) {
-    def +[T <: Component: ComponentType](component: T): Builder[ContextType] = {
+  case class Builder[T_Types <: Types](entity: Entity[T_Types])(implicit store: CEStore[T_Types]) {
+    def +[ComponentType](component: ComponentType)(implicit typeInfo: ComponentTypeInfo[ComponentType, T_Types]): Builder[T_Types] = {
       entity += component
       this
     }
+    def build(): Entity[T_Types] = entity
   }
-  object Builder {
-    implicit def builder2entity(b: Builder[_]): Entity = b.entity
-  }
-
-  implicit def e2id(e: Entity): Entity.Id = e.id
 }
