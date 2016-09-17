@@ -22,25 +22,33 @@ case class Entity[T_Types <: Types](id: T_Types#EntityId) {
 }
 
 object Entity {
-  case class Builder[T_Types <: Types](entityId: T_Types#EntityId, components: mutable.ArrayBuffer[UnAddedComponent[_, T_Types]] = new mutable.ArrayBuffer[UnAddedComponent[_, T_Types]])(implicit store: CEStore[T_Types]) {
-    def +[ComponentType](component: ComponentType)(implicit system: CESystem[ComponentType, T_Types]): Builder[T_Types] = {
-      components += UnAddedComponent(entityId, component)
-      this
-    }
-    def build: Entity[T_Types] = {
-      components.foreach(_.addTo(store))
-      Entity[T_Types](entityId)
+
+  object Builder {
+    def +[ComponentType, T_Types <: Types](component: ComponentType)(implicit system: CESystem[ComponentType, T_Types]): EntityBuilder[T_Types] = {
+      EntityBuilder[T_Types](Seq(UnAddedComponent(component, system)))
     }
   }
 
-  case class UnAddedComponent[ComponentType, T_Types <: Types](entityId: T_Types#EntityId,
-                                                               component: ComponentType)
-                                                              (implicit system: CESystem[ComponentType, T_Types]){
-    def addTo(store: CEStore[T_Types]): Unit = {
-      system.put(entityId, component)
+  case class EntityBuilder[T_Types <: Types](components: Seq[UnAddedComponent[_, T_Types]] = new mutable.ArrayBuffer[UnAddedComponent[_, T_Types]]) {
+    def +[ComponentType](component: ComponentType)(implicit system: CESystem[ComponentType, T_Types]): EntityBuilder[T_Types] = {
+      EntityBuilder(components :+ UnAddedComponent(component, system))
+    }
+    def build(entityId: T_Types#EntityId): Entity[T_Types] = {
+      components.foreach(_.addTo(entityId))
+      Entity[T_Types](entityId)
     }
   }
 
   case class HasNoSuchComponent(entityId: Any, componentType: Class[_])
     extends NoSuchElementException(s"Entity $entityId has no stored component of type ${componentType.getSimpleName}")
+
+  case class UnAddedComponent[ComponentType, T_Types <: Types](component: ComponentType, system: CESystem[ComponentType, T_Types]){
+    def addTo(entityId: T_Types#EntityId): Unit = {
+      system.put(entityId, component)
+    }
+    def removeFrom(entityId: T_Types#EntityId): Unit = {
+      system.remove(entityId)
+    }
+  }
+
 }

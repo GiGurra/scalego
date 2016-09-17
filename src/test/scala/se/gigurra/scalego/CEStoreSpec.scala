@@ -59,8 +59,8 @@ class CEStoreSpec
 
       val store = CEStore(positionSystem, velocitySystem)
 
-      val e1 = store.entityBuilder(entityId = "1") + Position(1, 2) + Velocity(3, 4) build
-      val e2 = store.entityBuilder(entityId = "2") + Position(5, 6) + Velocity(7, 8) build
+      val e1 = Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
+      val e2 = Entity.Builder + Position(5, 6) + Velocity(7, 8) build(entityId = "2")
 
       store.system[Position].size shouldBe 2
       store.system[Velocity].size shouldBe 2
@@ -83,8 +83,8 @@ class CEStoreSpec
 
       val store = CEStore(positionSystem, velocitySystem)
 
-      val e1 = store.entityBuilder(entityId = "1") + Position(1, 2) + Velocity(3, 4) build
-      val e2 = store.entityBuilder(entityId = "2") + Position(5, 6) + Velocity(7, 8) build
+      val e1 = Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
+      val e2 = Entity.Builder + Position(5, 6) + Velocity(7, 8) build(entityId = "2")
 
       store -= "1"
 
@@ -110,8 +110,8 @@ class CEStoreSpec
 
       val store = CEStore(positionSystem, velocitySystem)
 
-      val e1 = store.entityBuilder(entityId = 1) + Position(1, 2) + Velocity(3, 4) build
-      val e2 = store.entityBuilder(entityId = 2) + Position(5, 6) + Velocity(7, 8) build
+      val e1 = Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = 1)
+      val e2 = Entity.Builder + Position(5, 6) + Velocity(7, 8) build(entityId = 2)
 
       store -= 1
 

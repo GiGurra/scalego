@@ -19,10 +19,6 @@ class CEStore[T_Types <: Types] private(systems: Map[T_Types#ComponentTypeId, CE
   def containsEntity(entity: T_Types#EntityId): Boolean = {
     systems.values.exists(_.contains(entity))
   }
-
-  def entityBuilder(entityId: T_Types#EntityId): Entity.Builder[T_Types] = {
-    Entity.Builder[T_Types](entityId)(this)
-  }
 }
 
 object CEStore {
