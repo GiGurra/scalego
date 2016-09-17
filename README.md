@@ -59,16 +59,10 @@ Here is some example code using scalego-serialization-json:
 
 ```scala
 
+// Continuing on the code from the previous example, we can add to/from json funcitonality to ECS
+
 val serializer = JsonSerializer[StringIds]()
 import serializer._
-
-implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
-implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
-
-val ecs = ECS(positionSystem, velocitySystem)
-
-Entity.Builder + Position(1, 2) + Velocity(3, 4) build(entityId = "1")
-Entity.Builder + Position(5, 6) + Velocity(7, 8) build(entityId = "2")
 
 val ugly = ecs.toJson(pretty = false)
 val pretty = ecs.toJson(pretty = true)
