@@ -19,22 +19,22 @@ object Serialization {
 
   implicit class SerializableSystemOps[ComponentType: ClassTag, T_Types <: Types](system: System[ComponentType, T_Types]) {
     def toSerializable(implicit formats: SerializationFormats): SerializableSystem = {
-      SerializableSystem(system.values.map(serializeComponent(_, system.typeInfo)).toSeq, system.typeInfo.id)
+      SerializableSystem(system.map{case (k,v) => serializeComponent(k, v, system.typeInfo)}.toSeq, system.typeInfo.id)
     }
 
-    private def serializeComponent(component: Any, expectedType: ComponentTypeInfo[_, _])(implicit formats: SerializationFormats): SerializedComponent = {
+    private def serializeComponent(id: Any, component: Any, expectedType: ComponentTypeInfo[_, _])(implicit formats: SerializationFormats): SerializedComponent = {
       if (component.getClass == expectedType.classTag.runtimeClass) {
-        SerializedComponent(component, subType = None)
+        SerializedComponent(id, component, subType = None)
       } else {
         val typeId = formats.class2Id.getOrElse(component.getClass, throw UnknownSubTypeForSerialization(baseType = expectedType.classTag.runtimeClass, subType = component.getClass))
-        SerializedComponent(component, subType = Some(typeId))
+        SerializedComponent(id, component, subType = Some(typeId))
       }
     }
   }
 
   case class SerializableEcs(data: Seq[SerializableSystem])
   case class SerializableSystem(components: Seq[SerializedComponent], systemId: Any)
-  case class SerializedComponent(data: Any, subType: Option[String])
+  case class SerializedComponent(id: Any, data: Any, subType: Option[String])
 }
 
 case class SerializationFormats(mappings: Set[(String, Class[_])]) {
@@ -49,6 +49,7 @@ object SerializationFormats {
   def apply(mappings: (String, Class[_])*): SerializationFormats = new SerializationFormats(mappings.toSet)
   def fromShortClassName(types: Class[_]*): SerializationFormats = apply(types.map(t => t.getSimpleName -> t): _*)
   def fromFullClassName(types: Class[_]*): SerializationFormats = apply(types.map(t => t.getName -> t): _*)
+  val empty: SerializationFormats = apply()
 }
 
 case class UnknownSubTypeForSerialization(baseType: Class[_], subType: Class[_])

@@ -25,13 +25,13 @@ case class Entity[T_Types <: Types](id: T_Types#EntityId) {
 object Entity {
 
   object Builder {
-    def +[ComponentType, T_Types <: Types](component: ComponentType)(implicit system: System[ComponentType, T_Types]): EntityBuilder[T_Types] = {
+    def +[ComponentType, T_Types <: Types](component: ComponentType)(implicit system: System[_ >: ComponentType, T_Types]): EntityBuilder[T_Types] = {
       EntityBuilder[T_Types](Seq(UnAddedComponent(component, system)))
     }
   }
 
   case class EntityBuilder[T_Types <: Types](components: Seq[UnAddedComponent[_, T_Types]] = new mutable.ArrayBuffer[UnAddedComponent[_, T_Types]]) {
-    def +[ComponentType](component: ComponentType)(implicit system: System[ComponentType, T_Types]): EntityBuilder[T_Types] = {
+    def +[ComponentType](component: ComponentType)(implicit system: System[_ >: ComponentType, T_Types]): EntityBuilder[T_Types] = {
       EntityBuilder(components :+ UnAddedComponent(component, system))
     }
     def build(entityId: T_Types#EntityId): Entity[T_Types] = {
