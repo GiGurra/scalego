@@ -13,14 +13,14 @@ package object json {
   case class Position(x: Int, y: Int)
   case class Velocity(x: Int, y: Int)
 
-  class StringBasedIdTypes extends IdTypes {
-    override type SystemId = String
-    override type EntityId = String
+  type StringIds = IdTypes {
+    type SystemId = String
+    type EntityId = String
   }
 
-  class LongBasedIdTypes extends IdTypes {
-    override type SystemId = Long
-    override type EntityId = Long
+  type LongIds = IdTypes {
+    type SystemId = Long
+    type EntityId = Long
   }
 
   case class TestIntermediateType(obj: Any)

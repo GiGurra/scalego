@@ -12,14 +12,14 @@ class ECSSpec
   with Matchers
   with OneInstancePerTest {
 
-  class StringBasedIdTypes extends IdTypes {
-    override type SystemId = String
-    override type EntityId = String
+  type StringBasedIdTypes = IdTypes {
+    type SystemId = String
+    type EntityId = String
   }
 
-  class LongBasedIdTypes extends IdTypes {
-    override type SystemId = Long
-    override type EntityId = Long
+  type LongBasedIdTypes = IdTypes {
+    type SystemId = Long
+    type EntityId = Long
   }
 
   case class Position(x: Int, y: Int)

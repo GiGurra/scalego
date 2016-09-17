@@ -14,7 +14,7 @@ class JsonMapperSpec
     with Matchers
     with OneInstancePerTest {
 
-  val dut = new JsonMapper[StringBasedIdTypes]()
+  val dut = new JsonMapper[StringIds]()
   implicit val fmts = dut.jsonFormats
 
   "JsonMapper" should {

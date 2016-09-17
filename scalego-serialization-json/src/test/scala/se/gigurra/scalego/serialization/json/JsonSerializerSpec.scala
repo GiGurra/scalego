@@ -22,11 +22,11 @@ class JsonSerializerSpec
 
       "Transform ecs into JSON" in {
 
-        val dut = JsonSerializer[StringBasedIdTypes]()
+        val dut = JsonSerializer[StringIds]()
         import dut._
 
-        implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
-        implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())
+        implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
+        implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
 
         val ecs = ECS(positionSystem, velocitySystem)
 
@@ -44,11 +44,11 @@ class JsonSerializerSpec
 
       "Append json to ecs" in {
 
-        val dut = JsonSerializer[StringBasedIdTypes]()
+        val dut = JsonSerializer[StringIds]()
         import dut._
 
-        implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
-        implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())
+        implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
+        implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
 
         val ecs = ECS(positionSystem, velocitySystem)
 
@@ -68,11 +68,11 @@ class JsonSerializerSpec
 
       "Transform ecs into JSON" in {
 
-        val dut = JsonSerializer[LongBasedIdTypes]()
+        val dut = JsonSerializer[LongIds]()
         import dut._
 
-        implicit val positionSystem = new System[Position, LongBasedIdTypes](4, mutable.LongMap())
-        implicit val velocitySystem = new System[Velocity, LongBasedIdTypes](5, mutable.LongMap())
+        implicit val positionSystem = new System[Position, LongIds](4, mutable.LongMap())
+        implicit val velocitySystem = new System[Velocity, LongIds](5, mutable.LongMap())
 
         val ecs = ECS(positionSystem, velocitySystem)
 
@@ -90,11 +90,11 @@ class JsonSerializerSpec
 
       "Append json to ecs" in {
 
-        val dut = JsonSerializer[LongBasedIdTypes]()
+        val dut = JsonSerializer[LongIds]()
         import dut._
 
-        implicit val positionSystem = new System[Position, LongBasedIdTypes](4, mutable.LongMap())
-        implicit val velocitySystem = new System[Velocity, LongBasedIdTypes](5, mutable.LongMap())
+        implicit val positionSystem = new System[Position, LongIds](4, mutable.LongMap())
+        implicit val velocitySystem = new System[Velocity, LongIds](5, mutable.LongMap())
 
         val ecs = ECS(positionSystem, velocitySystem)
 

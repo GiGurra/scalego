@@ -18,8 +18,8 @@ class ECSSerializerSpec_write
 
     "Create a serializable representation of an ECS" in {
 
-      implicit val positionSystem = new System[Position, StringBasedIdTypes]("position", mutable.HashMap())
-      implicit val velocitySystem = new System[Velocity, StringBasedIdTypes]("velocity", mutable.HashMap())
+      implicit val positionSystem = new System[Position, StringIds]("position", mutable.HashMap())
+      implicit val velocitySystem = new System[Velocity, StringIds]("velocity", mutable.HashMap())
 
       val ecs = ECS(positionSystem, velocitySystem)
 
@@ -28,7 +28,7 @@ class ECSSerializerSpec_write
 
       implicit val formats = KnownSubTypes.empty
 
-      val serializer = ECSSerializer(TestMapper[StringBasedIdTypes]())
+      val serializer = ECSSerializer(TestMapper[StringIds]())
       import serializer._
 
       val result = ecs.toSerializable
@@ -49,9 +49,9 @@ class ECSSerializerSpec_write
 
     "Fail to a serializable representation of an ECS if systems contain unregistered/unknown subtypes" in {
 
-      implicit val baseSystem = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
+      implicit val baseSystem = new System[BaseType, StringIds]("base-type", mutable.HashMap())
 
-      val serializer = ECSSerializer(TestMapper[StringBasedIdTypes]())
+      val serializer = ECSSerializer(TestMapper[StringIds]())
       import serializer._
       val ecs = ECS(baseSystem)
 
@@ -62,9 +62,9 @@ class ECSSerializerSpec_write
 
     "Serializable representation of an ECS if systems contain registered/known subtypes" in {
 
-      implicit val baseSystem = new System[BaseType, StringBasedIdTypes]("base-type", mutable.HashMap())
+      implicit val baseSystem = new System[BaseType, StringIds]("base-type", mutable.HashMap())
 
-      val serializer = ECSSerializer(TestMapper[StringBasedIdTypes](), KnownSubTypes("cool-sub-type-id" -> classOf[SubType]))
+      val serializer = ECSSerializer(TestMapper[StringIds](), KnownSubTypes("cool-sub-type-id" -> classOf[SubType]))
       import serializer._
       val ecs = ECS(baseSystem)
 
