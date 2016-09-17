@@ -4,7 +4,6 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.8",
   scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation"),
   libraryDependencies ++= Seq(
-    "org.scala-lang"       %    "scala-reflect"         %   scalaVersion.value,
     "org.scalatest"        %%   "scalatest"             %   "2.2.4"     %   "test",
     "org.mockito"           %   "mockito-core"          %   "1.10.19"   %   "test"
   )
