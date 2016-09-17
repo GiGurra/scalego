@@ -7,8 +7,8 @@ import scala.language.implicitConversions
   */
 class ECS[T_IdTypes <: IdTypes] private(val systems: Map[T_IdTypes#SystemId, System[_, T_IdTypes]]) {
 
-  def system[T](implicit typeInfo: ComponentTypeInfo[T, T_IdTypes]): System[T, T_IdTypes] = {
-    systems.getOrElse(typeInfo.id, throw new RuntimeException(s"No system of type ${typeInfo.id} in $this")).asInstanceOf[System[T, T_IdTypes]]
+  def system[ComponentType](implicit typeInfo: ComponentTypeInfo[ComponentType, T_IdTypes]): System[ComponentType, T_IdTypes] = {
+    systems.getOrElse(typeInfo.id, throw new RuntimeException(s"No system of type ${typeInfo.id} in $this")).asInstanceOf[System[ComponentType, T_IdTypes]]
   }
 
   def -=(entity: T_IdTypes#EntityId): Unit = {
