@@ -1,2 +1,2 @@
-# scalego
+# Scalego
 Scala entity component systems
