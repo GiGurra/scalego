@@ -2,3 +2,8 @@ language: scala
 jdk: oraclejdk8
 script: sbt clean test #coverage
 #after_success: sbt coverageReport coveralls
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
