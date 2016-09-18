@@ -18,7 +18,7 @@ case class JsonSerializer[T_IdTypes <: IdTypes](knownSubtypes: KnownSubTypes = K
 
   private val serializer = new ECSSerializer[JValue, T_IdTypes](new JsonMapper[T_IdTypes](jsonFormats), knownSubtypes)
 
-  implicit class SerializableOpsWrite(ecs: ECS[T_IdTypes]) {
+  implicit class SerializableOps(ecs: ECS[T_IdTypes]) {
 
     def toJson(pretty: Boolean = false): String = {
       val map = serializer.SerializableECSOpsWrite(ecs).toSerializable
