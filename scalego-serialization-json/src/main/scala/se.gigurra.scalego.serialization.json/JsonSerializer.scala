@@ -20,14 +20,22 @@ case class JsonSerializer[T_IdTypes <: IdTypes](knownSubtypes: KnownSubTypes = K
 
   implicit class SerializableOps(ecs: ECS[T_IdTypes]) {
 
-    def toJson(pretty: Boolean = false): String = {
+    def toJsonAst: JValue = {
       val map = serializer.SerializableECSOpsWrite(ecs).toSerializable
-      if (pretty) prty(decompose(map)(jsonFormats))
-      else compact(decompose(map)(jsonFormats))
+      decompose(map)(jsonFormats)
+    }
+
+    def toJson(pretty: Boolean = false): String = {
+      if (pretty) prty(toJsonAst)
+      else compact(toJsonAst)
     }
 
     def appendJson(json: String): Unit = {
-      val intermediaryFormat = extract[SerializableEcs[JValue]](parse(json))(jsonFormats, implicitly[Manifest[SerializableEcs[JValue]]])
+      appendJsonAst(parse(json))
+    }
+
+    def appendJsonAst(json: JValue): Unit = {
+      val intermediaryFormat = extract[SerializableEcs[JValue]](json)(jsonFormats, implicitly[Manifest[SerializableEcs[JValue]]])
       serializer.SerializableECSOpsRead(ecs).append(intermediaryFormat)
     }
   }
