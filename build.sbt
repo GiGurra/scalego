@@ -38,4 +38,8 @@ lazy val scalego = Project(id = "scalego", base = file("."), settings = commonSe
   scalego_core,
   scalego_serialization,
   scalego_serialization_json
+).aggregate(
+  scalego_core,
+  scalego_serialization,
+  scalego_serialization_json
 )
