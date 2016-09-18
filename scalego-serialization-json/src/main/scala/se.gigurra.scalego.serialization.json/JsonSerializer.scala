@@ -13,27 +13,19 @@ import ECSSerializer._
   * Created by johan on 2016-09-17.
   */
 case class JsonSerializer[T_IdTypes <: IdTypes](knownSubtypes: KnownSubTypes = KnownSubTypes.empty,
-                                              jsonFormats: Formats = DefaultFormats)
-                                             (implicit systemIdMapper: IdTypeMapper[T_IdTypes#SystemId], entityIdMapper: IdTypeMapper[T_IdTypes#EntityId]) {
+                                                jsonFormats: Formats = DefaultFormats)
+                                               (implicit systemIdMapper: IdTypeMapper[T_IdTypes#SystemId], entityIdMapper: IdTypeMapper[T_IdTypes#EntityId]) {
 
   private val serializer = new ECSSerializer[JValue, T_IdTypes](new JsonMapper[T_IdTypes](jsonFormats), knownSubtypes)
 
-  /////////////////////////////
-  // Writing
-
   implicit class SerializableOpsWrite(ecs: ECS[T_IdTypes]) {
+
     def toJson(pretty: Boolean = false): String = {
       val map = serializer.SerializableECSOpsWrite(ecs).toSerializable
       if (pretty) prty(decompose(map)(jsonFormats))
       else compact(decompose(map)(jsonFormats))
     }
-  }
 
-
-  //////////////////////////////
-  // Reading
-
-  implicit class SerializableOpsRead(ecs: ECS[T_IdTypes]) {
     def appendJson(json: String): Unit = {
       val intermediaryFormat = extract[SerializableEcs[JValue]](parse(json))(jsonFormats, implicitly[Manifest[SerializableEcs[JValue]]])
       serializer.SerializableECSOpsRead(ecs).append(intermediaryFormat)
