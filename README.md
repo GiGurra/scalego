@@ -102,7 +102,7 @@ Scalego is just something I've hacked on a few weekends, so unless lots of peopl
 
 ```sbt
 
-.dependsOn(uri("git://github.com/GiGurra/scalego.git#0.3.2"))
+.dependsOn(uri("git://github.com/GiGurra/scalego.git#0.3.4"))
 
 ```
 
