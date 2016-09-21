@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/GiGurra/scalego.svg?branch=master)](https://travis-ci.org/GiGurra/scalego)
 
-An Entity Component System implementation in Scala
+An Entity Component System implementation in Scala, inspired by https://www.youtube.com/watch?v=16ZF9XqkfRY
 
 Goals:
 
