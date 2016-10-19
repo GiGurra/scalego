@@ -6,7 +6,8 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     "org.scalatest"        %%   "scalatest"             %   "2.2.4"     %   "test",
     "org.mockito"           %   "mockito-core"          %   "1.10.19"   %   "test"
-  )
+  ),
+  pgpPassphrase := sys.env.get("PGP_PASSPHRASE").map(_.toArray)
 )
 
 lazy val scalego_core = Project(
