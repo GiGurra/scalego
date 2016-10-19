@@ -14,7 +14,7 @@ Example use:
 
 ```scala
 
-import se.gigurra.scalego.core._
+import com.github.gigurra.scalego.core._
 
 // Decide the types you want to use as entity/system Ids
 type StringIds = IdTypes {
@@ -78,7 +78,7 @@ Example code using scalego-serialization-json:
 
 ```scala
 
-import se.gigurra.scalego.serialization.json.JsonSerializer
+import com.github.gigurra.scalego.serialization.json.JsonSerializer
 
 val serializer = JsonSerializer[StringIds]()
 import serializer._ // Adds a .toJson method to the ECS class
@@ -102,7 +102,7 @@ Scalego is just something I've hacked on a few weekends, so unless lots of peopl
 
 ```sbt
 
-.dependsOn(uri("git://github.com/GiGurra/scalego.git#0.3.6"))
+.dependsOn(uri("git://github.com/GiGurra/scalego.git#0.3.7"))
 
 ```
 

@@ -1,6 +1,6 @@
 lazy val commonSettings = Seq(
-  organization := "se.gigurra",
-  version := "SNAPSHOT",
+  organization := "com.github.gigurra",
+  version := "0.3.7-SNAPSHOT",
   scalaVersion := "2.11.8",
   scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation"),
   libraryDependencies ++= Seq(
