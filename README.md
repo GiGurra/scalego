@@ -98,12 +98,6 @@ ecs.appendJson(json: String)
 
 ## Try it!
 
-Scalego is just something I've hacked on a few weekends, so unless lots of people suddenly want me to publish it I'll just stick with it as a github dependency.
-
 ```sbt
-
-.dependsOn(uri("git://github.com/GiGurra/scalego.git#0.3.7"))
-
+libraryDependencies += "com.github.gigurra" %% "scalego" % "0.3.7"
 ```
-
-
